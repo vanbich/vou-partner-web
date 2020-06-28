@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.css';
-import { Router } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
+import { BrowserRouter } from 'react-router-dom';
 
 // Material helpers
 import { ThemeProvider } from '@material-ui/styles';
@@ -16,15 +15,12 @@ import './assets/scss/index.scss';
 // Routes
 import Routes from './Routes';
 
-// Browser history
-const browserHistory = createBrowserHistory();
-
 function App() {
   return (
       <ThemeProvider theme={theme}>
-        <Router history={browserHistory}>
+        <BrowserRouter>
           <Routes />
-        </Router>
+        </BrowserRouter>
       </ThemeProvider>  );
 }
 

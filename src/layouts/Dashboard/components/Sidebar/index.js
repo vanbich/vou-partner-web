@@ -94,17 +94,17 @@ class Sidebar extends Component {
         <Divider className={classes.profileDivider} />
         <List component="div" disablePadding ref={this.wrapper}>
           <ListItem
-            activeclassname={classes.activeListItem}
-            component={NavLink}
-            to="/dashboard"
-            className={classes.listItem}
+              activeClassName={classes.activeListItem}
+              className={classes.listItem}
+              component={NavLink}
+              to="/dashboard"
           >
             <ListItemIcon className={classes.listItemIcon}>
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText
-              classes={{ primary: classes.listItemText }}
-              primary="Dashboard"
+                classes={{ primary: classes.listItemText }}
+                primary="Dashboard"
             />
           </ListItem>
 
