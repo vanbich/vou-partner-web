@@ -81,8 +81,10 @@ Dashboard.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-const mapStateToProps = () => {
-  return {};
+const mapStateToProps = state => {
+  return {
+      isLoading: state.Authentication.isLoading
+  };
 };
 
 const mapDispatchToProps = dispatch => {

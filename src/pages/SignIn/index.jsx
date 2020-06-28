@@ -117,18 +117,17 @@ class SignIn extends Component {
     }
 
     return (
-      <div>
         <Card className={classes.root}>
           <Grid container direction="row" justify="center" alignItems="center">
             <Grid
-              item
-              lg={6}
-              style={{
-                textAlign: "center",
-                backgroundColor: "rgba(255,169,166,0.56)",
-                paddingTop: "100px",
-                paddingBottom: "100px"
-              }}
+                item
+                lg={6}
+                style={{
+                  textAlign: "center",
+                  backgroundColor: "rgba(255,169,166,0.56)",
+                  paddingTop: "100px",
+                  paddingBottom: "100px"
+                }}
             >
               <Typography variant="h2" className={classes.subtitle}>
                 I'm glad to see you everyday
@@ -136,67 +135,67 @@ class SignIn extends Component {
               <img alt="sign-in" src="/images/banners/login.png" />
             </Grid>
             <Grid
-              item
-              lg={6}
-              style={{
-                textAlign: "center",
-                paddingTop: "50px",
-                paddingBottom: "50px"
-              }}
+                item
+                lg={6}
+                style={{
+                  textAlign: "center",
+                  paddingTop: "50px",
+                  paddingBottom: "50px"
+                }}
             >
               <Grid
-                container
-                direction="column"
-                justify="center"
-                alignItems="center"
+                  container
+                  direction="column"
+                  justify="center"
+                  alignItems="center"
               >
                 <Grid item lg={6} className={classes.title}>
                   <img alt="Vou" src="/images/logos/vou-50px.png" />
                 </Grid>
                 <Grid item lg={6} className={classes.fields}>
                   <TextField
-                    className={classes.textField}
-                    label="Email address"
-                    name="email"
-                    onChange={event =>
-                      this.handleFieldChange("email", event.target.value)
-                    }
-                    type="text"
-                    value={values.email}
-                    variant="outlined"
+                      className={classes.textField}
+                      label="Email address"
+                      name="email"
+                      onChange={event =>
+                          this.handleFieldChange("email", event.target.value)
+                      }
+                      type="text"
+                      value={values.email}
+                      variant="outlined"
                   />
                 </Grid>
                 <Grid item lg={6} className={classes.fields}>
                   {showEmailError && (
-                    <Typography className={classes.fieldError} variant="body2">
-                      {errors.email[0]}
-                    </Typography>
+                      <Typography className={classes.fieldError} variant="body2">
+                        {errors.email[0]}
+                      </Typography>
                   )}
                 </Grid>
                 <Grid item lg={6} className={classes.fields}>
                   <TextField
-                    className={classes.textField}
-                    label="Password"
-                    name="password"
-                    onChange={event =>
-                      this.handleFieldChange("password", event.target.value)
-                    }
-                    type="password"
-                    value={values.password}
-                    variant="outlined"
+                      className={classes.textField}
+                      label="Password"
+                      name="password"
+                      onChange={event =>
+                          this.handleFieldChange("password", event.target.value)
+                      }
+                      type="password"
+                      value={values.password}
+                      variant="outlined"
                   />
                 </Grid>
                 <Grid item lg={6} className={classes.fields}>
                   {showPasswordError && (
-                    <Typography className={classes.fieldError} variant="body2">
-                      {errors.password[0]}
-                    </Typography>
+                      <Typography className={classes.fieldError} variant="body2">
+                        {errors.password[0]}
+                      </Typography>
                   )}
                 </Grid>
                 {messageError && (
-                  <Typography className={classes.submitError} variant="body2">
-                    {messageError}
-                  </Typography>
+                    <Typography className={classes.submitError} variant="body2">
+                      {messageError}
+                    </Typography>
                 )}
                 <Grid item lg={6} className={classes.forgot}>
                   <Link className={classes.forgot} to="/">
@@ -205,26 +204,26 @@ class SignIn extends Component {
                 </Grid>
                 <Grid item lg={6} className={classes.fields}>
                   {isLoading && !messageError ? (
-                    <CircularProgress className={classes.progress} />
+                      <CircularProgress className={classes.progress} />
                   ) : messageError ? (
-                    <Button
-                      className={classes.signInButton}
-                      onClick={this.handleSingInFail}
-                      size="large"
-                      variant="contained"
-                    >
-                      Try again
-                    </Button>
+                      <Button
+                          className={classes.signInButton}
+                          onClick={this.handleSingInFail}
+                          size="large"
+                          variant="contained"
+                      >
+                        Try again
+                      </Button>
                   ) : (
-                    <Button
-                      className={classes.signInButton}
-                      disabled={!isValid}
-                      onClick={this.handleSignIn}
-                      size="large"
-                      variant="contained"
-                    >
-                      Sign In
-                    </Button>
+                      <Button
+                          className={classes.signInButton}
+                          disabled={!isValid}
+                          onClick={this.handleSignIn}
+                          size="large"
+                          variant="contained"
+                      >
+                        Sign In
+                      </Button>
                   )}
                 </Grid>
                 <Grid item lg={6} className={classes.fields}>
@@ -239,7 +238,6 @@ class SignIn extends Component {
             </Grid>
           </Grid>
         </Card>
-      </div>
     );
   }
 }
