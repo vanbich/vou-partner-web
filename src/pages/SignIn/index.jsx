@@ -79,12 +79,6 @@ class SignIn extends Component {
     this.props.doSignIn(values.email, values.password);
   };
 
-  handelSignInSuccess = () => {
-    const { token } = this.props;
-    this.props.doGetInfo(token);
-    localStorage.setItem("isAuthenticated", true);
-
-  };
 
   handleSingInFail = () => {
     this.props.doRefresh();
@@ -112,7 +106,6 @@ class SignIn extends Component {
     const showPasswordError = touched.password && errors.password;
 
     if (token) {
-      this.handelSignInSuccess();
       return (<Redirect to={"/dashboard"}/>)
     }
 
