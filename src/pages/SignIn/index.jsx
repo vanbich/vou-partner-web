@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import compose from "recompose/compose";
 import validate from "validate.js";
 import _ from "underscore";
-// import cookie from 'react-cookies';
+import cookie from "react-cookies";
 
 // Material helpers
 import { withStyles } from "@material-ui/core";
@@ -32,7 +32,6 @@ import schema from "./schema";
 // Service methods
 import { connect } from "react-redux";
 import {clear, loginRequest} from "../../actions/AthenticationActions";
-import {getInfoRequest} from "../../actions/UserActions";
 
 class SignIn extends Component {
   state = {
@@ -52,8 +51,7 @@ class SignIn extends Component {
     submitError: null
   };
 
-
-  validateForm = _.debounce(() => {
+    validateForm = _.debounce(() => {
     const { values } = this.state;
 
     const newState = { ...this.state };
@@ -85,7 +83,7 @@ class SignIn extends Component {
     const { token } = this.props;
     this.props.doGetInfo(token);
     localStorage.setItem("isAuthenticated", true);
-   
+
   };
 
   handleSingInFail = () => {
@@ -100,7 +98,7 @@ class SignIn extends Component {
   };
 
   render() {
-    const { classes, isLogin, messageError, isLoading} = this.props;
+    const { classes, messageError, isLoading} = this.props;
     const {
       values,
       touched,
@@ -108,10 +106,12 @@ class SignIn extends Component {
       isValid,
     } = this.state;
 
+    const token = cookie.load('token');
+
     const showEmailError = touched.email && errors.email;
     const showPasswordError = touched.password && errors.password;
 
-    if (isLogin) {
+    if (token) {
       this.handelSignInSuccess();
       return (<Redirect to={"/dashboard"}/>)
     }
@@ -252,8 +252,6 @@ SignIn.propTypes = {
 
 const mapStateToProps = state => {
   return {
-    isLogin: state.Authentication.isLogin,
-    token:  state.Authentication.token,
     messageError: state.Authentication.messageError,
     isLoading: state.Authentication.isLoading,
   };
@@ -267,9 +265,6 @@ const mapDispatchToProps = dispatch => {
     doRefresh: () => {
       dispatch(clear());
     },
-    doGetInfo: token => {
-      dispatch(getInfoRequest(token));
-    }
   };
 };
 export default connect(

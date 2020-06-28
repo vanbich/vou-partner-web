@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import {Redirect}from 'react-router-dom';
+import { Redirect } from "react-router-dom";
 
 // Externals
 import PropTypes from "prop-types";
+import cookie from "react-cookies";
 
 // Material helpers
 import { withStyles } from "@material-ui/core";
@@ -15,9 +16,9 @@ import Box from "@material-ui/core/Box";
 // Shared layouts
 import { Dashboard as DashboardLayout } from "../../layouts";
 
-
 // Service
 import { connect } from "react-redux";
+import { getInfoRequest } from "../../actions/UserActions";
 
 // Component styles
 const styles = theme => ({
@@ -30,11 +31,16 @@ const styles = theme => ({
 });
 
 class Dashboard extends Component {
-  render() {
-    const {classes, isLogin } = this.props;
+  componentDidMount() {
+    const token = cookie.load("token");
+    this.props.doGetInfo(token);
+  }
 
-    if (!isLogin) {
-      return (<Redirect to="/sign-in"/>)
+  render() {
+    const { classes } = this.props;
+
+    if (!cookie.load("token")) {
+      return <Redirect to="/sign-in" />;
     }
 
     return (
@@ -75,14 +81,16 @@ Dashboard.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-const mapStateToProps = state => {
-  return {
-    isLogin: state.Authentication.isLogin
-  };
+const mapStateToProps = () => {
+  return {};
 };
 
-const mapDispatchToProps = () => {
-  return {};
+const mapDispatchToProps = dispatch => {
+  return {
+    doGetInfo: token => {
+      dispatch(getInfoRequest(token));
+    }
+  };
 };
 export default connect(
   mapStateToProps,

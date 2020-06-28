@@ -1,33 +1,42 @@
 import userConstants from "../constants";
+import cookie from "react-cookies";
 
 const initState = {
-  isLogin: false,
   isRegister: false,
   messageError: null,
   token: null,
   isLoading: false
 };
 
+function saveCookies(name, value, exp) {
+  const d = new Date();
+  d.setTime(d.getTime() + exp * 24 * 60 * 60 * 1000);
+  const expires = `expires=${d.toUTCString()}`;
+  document.cookie = `${name}=${value};${expires};path=/`;
+}
 const Authentication = (state = initState, action) => {
   switch (action.type) {
     case userConstants.LOGIN_REQUEST: {
-      state.isLogin = false;
       state.token = null;
       state.isLoading = true;
       state.messageError = null;
       return { ...state };
     }
     case userConstants.LOGIN_SUCCESS: {
-      state.isLogin = true;
+      const expires = new Date();
+      expires.setDate(Date.now() + 1000 * 60 * 60 * 24 * 14);
+
       state.token = action.payload.res.data.token;
       state.isLoading = false;
       state.messageError = null;
 
+      saveCookies('token', state.token, 7);
+
       return { ...state };
     }
-    case userConstants.LOGIN_FAILURE:{
+    case userConstants.LOGIN_FAILURE: {
       if (
-          action.payload.err.message === "Request failed with status code 401"
+        action.payload.err.message === "Request failed with status code 401"
       ) {
         state.messageError = "Incorrect email or password!";
       }
@@ -36,40 +45,36 @@ const Authentication = (state = initState, action) => {
         state.messageError = "Check your connection, please!";
       }
 
-      state.isLogin = false;
       state.token = null;
       state.isLoading = false;
 
       console.log("err", state.messageError);
 
-      return {...state};
+      return { ...state };
     }
 
     case userConstants.REGISTER_SUCCESS: {
       state.isRegister = true;
       state.messageError = null;
       state.isLoading = false;
-      state.isLogin = false;
       state.token = null;
 
       return { ...state };
     }
-    case userConstants.REGISTER_REQUEST:{
-      state.isLogin = false;
+    case userConstants.REGISTER_REQUEST: {
       state.isRegister = false;
       state.messageError = null;
       state.token = null;
       state.isLoading = true;
       return { ...state };
     }
-    case userConstants.REGISTER_FAILURE:{
-
+    case userConstants.REGISTER_FAILURE: {
       if (
-          action.payload.err.message ===
-          "That password is to short (or too long). Please make sure your password is between 6 and 16 characters."
+        action.payload.err.message ===
+        "That password is to short (or too long). Please make sure your password is between 6 and 16 characters."
       ) {
         state.messageError =
-            "Please make sure your password is between 6 and 16 characters";
+          "Please make sure your password is between 6 and 16 characters";
       }
 
       if (action.payload.err.message === "Network Error") {
@@ -87,8 +92,7 @@ const Authentication = (state = initState, action) => {
     }
 
     case userConstants.LOGOUT: {
-      localStorage.setItem("isAuthentication", false);
-      state.isLogin = false;
+      cookie.remove("token", { path: "/" });
       state.isRegister = false;
       state.messageError = null;
       state.token = null;
@@ -97,7 +101,6 @@ const Authentication = (state = initState, action) => {
     }
 
     case userConstants.REFRESH_STATE: {
-      state.isLogin = false;
       state.isRegister = false;
       state.messageError = null;
       state.token = null;
