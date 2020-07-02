@@ -123,13 +123,11 @@ class Campaign extends Component {
     };
   }
 
-  signal = true;
-
-  getCampaigns = async () => {
+  getCampaigns = () => {
     const { id } = this.props;
     const token = cookie.load("token");
-    await this.props.doGetMyCampaigns(token, id);
-    await this.props.doGetMyVouchers(token, id);
+    this.props.doGetMyCampaigns(token, id);
+    this.props.doGetMyVouchers(token, id);
   };
 
   groupData = (campaigns, vouchers) => {
@@ -227,7 +225,11 @@ class Campaign extends Component {
   };
 
   dateToString = date => {
-    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    return `${date.getFullYear()}-${
+      date.getMonth() + 1 < 10
+        ? "0" + (date.getMonth() + 1)
+        : date.getMonth() + 1
+    }-${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}`;
   };
 
   createCampaign = () => {
@@ -242,43 +244,21 @@ class Campaign extends Component {
       num_of_voucher
     } = this.state;
     const { id } = this.props;
-    const token = cookie.load('token');
-    try {
-      this.setState({
-        isLoadingCreateCampaign: true
-      });
-      // console.log(
-      //   "doCreateCampaign",
-      //   name,
-      //   image,
-      //   id,
-      //   discount,
-      //   num_of_voucher,
-      //   promo_code,
-      //   "url",
-      //   description,
-      //   this.dateToString(start_time),
-      //   this.dateToString(end_time),
-      //   token
-      // );
-      this.props.doCreateCampaign(
-        name,
-        imageCampaign,
-        id,
-        discount,
-        num_of_voucher,
-        promo_code,
-        "url",
-        description,
-        this.dateToString(start_time),
-        this.dateToString(end_time),
-        token
-      );
-    } catch (e) {
-      this.setState({
-        isLoadingCreateCampaign: false
-      });
-    }
+    const token = cookie.load("token");
+
+    this.props.doCreateCampaign(
+      name,
+      imageCampaign,
+      id,
+      discount,
+      num_of_voucher,
+      promo_code,
+      "url",
+      description,
+      this.dateToString(start_time),
+      this.dateToString(end_time),
+      token
+    );
   };
 
   handleCreateCampaignFail = () => {
