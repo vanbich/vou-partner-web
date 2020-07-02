@@ -1,9 +1,9 @@
 export default theme => ({
     root: {
-        padding: theme.spacing.unit * 3
+        padding: theme.spacing(3)
     },
     content: {
-        marginTop: theme.spacing.unit * 2
+        marginTop: theme.spacing(2)
     },
     progressWrapper: {
         paddingTop: '48px',
@@ -45,7 +45,7 @@ export default theme => ({
     },
     successContent: {
         color: "green",
-        marginLeft: theme.spacing.unit * 2
+        marginLeft: theme.spacing(2)
     },
     icon: {
         color: "green"
@@ -54,7 +54,7 @@ export default theme => ({
         display: "flex",
         alignItems: "center",
         width: "auto",
-        marginBottom: theme.spacing.unit
+        marginBottom: theme.spacing(1)
     },
     typo: {
         padding: 10,
@@ -65,7 +65,7 @@ export default theme => ({
         textAlign: 'center',
     },
     textfield: {
-        marginLeft: theme.spacing.unit,
+        marginLeft: theme.spacing(1),
         flex: 1,
         fontSize: 12,
     },

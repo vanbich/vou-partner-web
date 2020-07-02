@@ -1,10 +1,10 @@
 export default theme => ({
     root: {
         maxWidth: "100%",
-        paddingTop: theme.spacing.unit,
-        paddingBottom: theme.spacing.unit,
-        paddingRight: theme.spacing.unit,
-        paddingLeft: theme.spacing.unit
+        paddingTop: theme.spacing(1),
+        paddingBottom: theme.spacing(1),
+        paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(1)
     },
     imageWrapper: {
         height: 150,
@@ -23,7 +23,7 @@ export default theme => ({
         fontSize: "30px",
         lineHeight: "21px",
         textAlign: "center",
-        marginTop: theme.spacing.unit * 2,
+        marginTop: theme.spacing(2),
         color: "#f27a0c",
         textShadow: "2px 2px 0 #ffffff"
     },
@@ -31,31 +31,31 @@ export default theme => ({
         fontSize: "15px",
         lineHeight: "21px",
         textAlign: "center",
-        marginTop: theme.spacing.unit * 2,
+        marginTop: theme.spacing(2),
         color: "#ffffff"
     },
 
     description: {
         lineHeight: "16px",
-        height: theme.spacing.unit * 4,
+        height: theme.spacing(4),
         overflow: "hidden",
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
         color: theme.palette.text.secondary,
         textAlign: "center",
-        marginTop: theme.spacing.unit,
-        marginBottom: theme.spacing.unit * 2
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(2)
     },
     stats: {
         display: "flex",
         alignItems: "center",
-        paddingTop: theme.spacing.unit
+        paddingTop: theme.spacing(1)
     },
     updateIcon: {
         color: "green"
     },
     updateText: {
-        marginLeft: theme.spacing.unit,
+        marginLeft: theme.spacing(1),
         color: theme.palette.text.secondary
     },
     downloadsIcon: {
@@ -63,14 +63,14 @@ export default theme => ({
         color: "red"
     },
     downloadsText: {
-        marginLeft: theme.spacing.unit,
+        marginLeft: theme.spacing(1),
         color: theme.palette.text.secondary
     },
     row: {
         height: "42px",
         display: "flex",
         alignItems: "center",
-        marginTop: theme.spacing.unit
+        marginTop: theme.spacing(1)
     },
     spacer: {
         flexGrow: 1
@@ -135,7 +135,7 @@ export default theme => ({
         display: "flex",
         alignItems: "center",
         width: "auto",
-        marginBottom: theme.spacing.unit
+        marginBottom: theme.spacing(1)
     },
     typo: {
         padding: 10,
@@ -146,7 +146,7 @@ export default theme => ({
         textAlign: 'center',
     },
     textfield: {
-        marginLeft: theme.spacing.unit,
+        marginLeft: theme.spacing(1),
         flex: 1,
         fontSize: 12,
     },

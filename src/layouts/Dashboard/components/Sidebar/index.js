@@ -23,7 +23,7 @@ import {
 // Material icons
 import {
   DashboardOutlined as DashboardIcon,
-  // AccountBoxOutlined as AccountBoxIcon,
+  AccountBoxOutlined as AccountBoxIcon,
 } from "@material-ui/icons";
 // import SportsEsportsIcon from "@material-ui/icons/SportsEsports";
 import ConfirmationNumberIcon from "@material-ui/icons/ConfirmationNumber";
@@ -129,6 +129,20 @@ class Sidebar extends Component {
             />
           </ListItem>
 
+          <ListItem
+              activeClassName={classes.activeListItem}
+              className={classes.listItem}
+              component={NavLink}
+              to="/account"
+          >
+            <ListItemIcon className={classes.listItemIcon}>
+              <AccountBoxIcon />
+            </ListItemIcon>
+            <ListItemText
+                classes={{ primary: classes.listItemText }}
+                primary="Account"
+            />
+          </ListItem>
         </List>
       </nav>
     );

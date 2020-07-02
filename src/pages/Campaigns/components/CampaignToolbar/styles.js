@@ -4,13 +4,13 @@ export default theme => ({
         height: '42px',
         display: 'flex',
         alignItems: 'center',
-        marginTop: theme.spacing.unit
+        marginTop: theme.spacing(1)
     },
     spacer: {
         flexGrow: 1
     },
     searchInput: {
-        marginRight: theme.spacing.unit
+        marginRight: theme.spacing(1)
     },
     button:{
         backgroundColor: "#62cdd9",
