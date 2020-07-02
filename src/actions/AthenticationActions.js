@@ -84,14 +84,18 @@ const loginActionFailure = (err) => {
   };
 };
 
-export const loginRequest = (email, password) => async (dispatch) => {
-  dispatch(loginActionRequest());
-  try {
-    const res = await doLogin(email, password);
-    dispatch(loginActionSuccess(res));
-  } catch (e) {
-    dispatch(loginActionFailure(e));
-  }
+export const loginRequest = (email, password) => {
+  return dispatch => {
+    dispatch(loginActionRequest());
+    return doLogin(email, password).then(res => {
+      if (res.data) {
+        console.log("login", res);
+        dispatch(loginActionSuccess(res));
+      } else {
+        dispatch(loginActionFailure(res));
+      }
+    });
+  };
 };
 
 export const logOut = () => {
