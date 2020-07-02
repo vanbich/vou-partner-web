@@ -8,9 +8,6 @@ import PropTypes from "prop-types";
 // Material helpers
 import { withStyles } from "@material-ui/core";
 
-//Service methods
-import { connect } from "react-redux";
-
 // Material components
 import {
   Avatar,
@@ -29,17 +26,26 @@ import {
   // AccountBoxOutlined as AccountBoxIcon,
 } from "@material-ui/icons";
 // import SportsEsportsIcon from "@material-ui/icons/SportsEsports";
-// import ConfirmationNumberIcon from "@material-ui/icons/ConfirmationNumber";
+import ConfirmationNumberIcon from "@material-ui/icons/ConfirmationNumber";
 // import GroupAddIcon from "@material-ui/icons/GroupAdd";
 
 // Component styles
 import styles from "./styles";
 
+// Service
+import { connect } from "react-redux";
+import { getInfoRequest } from "../../../../actions/UserActions";
+import cookie from "react-cookies";
+
 class Sidebar extends Component {
   constructor(props) {
     super(props);
-
     this.wrapper = React.createRef();
+  }
+
+  componentDidMount() {
+    const token = cookie.load("token");
+    this.props.doGetInfo(token);
   }
 
   render() {
@@ -108,62 +114,21 @@ class Sidebar extends Component {
             />
           </ListItem>
 
-          {/*<ListItem*/}
-          {/*  component={NavLink}*/}
-          {/*  to="/campaigns"*/}
-          {/*  className={classes.listItem}*/}
-          {/*  activeclassname={classes.activeListItem}*/}
-          {/*>*/}
-          {/*  <ListItemIcon className={classes.listItemIcon}>*/}
-          {/*    <ConfirmationNumberIcon />*/}
-          {/*  </ListItemIcon>*/}
-          {/*  <ListItemText*/}
-          {/*    classes={{ primary: classes.listItemText }}*/}
-          {/*    primary="Campaigns"*/}
-          {/*  />*/}
-          {/*</ListItem>*/}
-          {/*<ListItem*/}
-          {/*  activeclassname={classes.activeListItem}*/}
-          {/*  className={classes.listItem}*/}
-          {/*  component={NavLink}*/}
-          {/*  to="/games"*/}
-          {/*>*/}
-          {/*  <ListItemIcon className={classes.listItemIcon}>*/}
-          {/*    <SportsEsportsIcon />*/}
-          {/*  </ListItemIcon>*/}
-          {/*  <ListItemText*/}
-          {/*    classes={{ primary: classes.listItemText }}*/}
-          {/*    primary="Games"*/}
-          {/*  />*/}
-          {/*</ListItem>*/}
-          {/*<ListItem*/}
-          {/*  component={NavLink}*/}
-          {/*  to="/employee"*/}
-          {/*  activeclassname={classes.activeListItem}*/}
-          {/*  className={classes.listItem}*/}
-          {/*>*/}
-          {/*  <ListItemIcon className={classes.listItemIcon}>*/}
-          {/*    <GroupAddIcon />*/}
-          {/*  </ListItemIcon>*/}
-          {/*  <ListItemText*/}
-          {/*    classes={{ primary: classes.listItemText }}*/}
-          {/*    primary="Employee"*/}
-          {/*  />*/}
-          {/*</ListItem>*/}
-          {/*<ListItem*/}
-          {/*  component={NavLink}*/}
-          {/*  to="/account"*/}
-          {/*  className={classes.listItem}*/}
-          {/*  activeclassname={classes.activeListItem}*/}
-          {/*>*/}
-          {/*  <ListItemIcon className={classes.listItemIcon}>*/}
-          {/*    <AccountBoxIcon />*/}
-          {/*  </ListItemIcon>*/}
-          {/*  <ListItemText*/}
-          {/*    classes={{ primary: classes.listItemText }}*/}
-          {/*    primary="Account"*/}
-          {/*  />*/}
-          {/*</ListItem>*/}
+          <ListItem
+              activeClassName={classes.activeListItem}
+              className={classes.listItem}
+              component={NavLink}
+              to="/campaigns"
+          >
+            <ListItemIcon className={classes.listItemIcon}>
+              <ConfirmationNumberIcon />
+            </ListItemIcon>
+            <ListItemText
+                classes={{ primary: classes.listItemText }}
+                primary="Campaigns"
+            />
+          </ListItem>
+
         </List>
       </nav>
     );
@@ -183,8 +148,12 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = () => {
-  return {};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    doGetInfo: token => {
+      dispatch(getInfoRequest(token));
+    }
+  };
 };
 
 export default connect(

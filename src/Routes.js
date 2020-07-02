@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import NotFound from "./pages/NotFound";
+import Campaign from "./pages/Campaigns";
 
 
 export default class Routes extends Component {
@@ -17,6 +18,7 @@ export default class Routes extends Component {
 
             <Route component={SignUp} exact path="/sign-up" />
             <Route component={SignIn} exact path="/sign-in" />
+            <Route component={Campaign} exact path="/campaigns" />
 
             <Route component={NotFound} exact path="/not-found" />
             <Redirect to="/not-found" />

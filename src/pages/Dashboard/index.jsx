@@ -18,7 +18,6 @@ import { Dashboard as DashboardLayout } from "../../layouts";
 
 // Service
 import { connect } from "react-redux";
-import { getInfoRequest } from "../../actions/UserActions";
 
 // Component styles
 const styles = theme => ({
@@ -31,10 +30,6 @@ const styles = theme => ({
 });
 
 class Dashboard extends Component {
-  componentDidMount() {
-    const token = cookie.load("token");
-    this.props.doGetInfo(token);
-  }
 
   render() {
     const { classes } = this.props;
@@ -87,11 +82,9 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = () => {
   return {
-    doGetInfo: token => {
-      dispatch(getInfoRequest(token));
-    }
+
   };
 };
 export default connect(
