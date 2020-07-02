@@ -7,20 +7,16 @@ export default theme => ({
         paddingLeft: theme.spacing.unit
     },
     imageWrapper: {
-        height: "62px",
-        width: "62px",
-        margin: "30% auto",
-        // border: '1px solid #EDF0F2',
-        overflow: "hidden",
+        height: 150,
+        width: "100%",
         display: "flex",
         alignItems: "center",
         justifyContent: "center"
     },
     image: {
-        width: "100%",
-        top: "50%",
-        left: "50%",
-        translate: "transform(50%,50%)"
+        maxWidth: "100%",
+        maxHeight: "100%",
+        borderRadius: "10px"
     },
     details: {},
     title: {

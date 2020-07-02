@@ -260,13 +260,13 @@ class CampaignCard extends Component {
                             </Grid>
                             <Grid item xs={8}>
                                 <div
-                                    className={classes.displayImage}
+                                    className={classes.imageWrapper}
                                     onClick={this.handleClickOpen}
                                 >
                                     <img
                                         src={product.image}
                                         alt={product.name}
-                                        className={classes.productImage}
+                                        className={classes.image}
                                     />
                                 </div>
                             </Grid>
