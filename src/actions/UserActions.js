@@ -4,7 +4,7 @@ import userConstants from "../constants";
 const doGetInfo = (token) => {
   const res = axios({
     method: "GET",
-    url: "http://vouapp-api.herokuapp.com/user/me",
+    url: "https://vouapp-api.herokuapp.com/user/me",
     headers: {
       token: `JWT ${token}`
     }
@@ -35,7 +35,7 @@ export const getInfoRequest = (token) => {
 const doUpdateInfo = (display_name,phone, email, address, avatar, token) => {
   const res = axios({
     method: "PATCH",
-    url: "http://vouapp-api.herokuapp.com/user/me",
+    url: "https://vouapp-api.herokuapp.com/user/me",
     headers: {
       token: `JWT ${token}`
     },

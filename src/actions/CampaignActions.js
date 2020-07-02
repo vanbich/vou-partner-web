@@ -31,7 +31,7 @@ const doCreateCampaign = (
 
     const res = axios({
         method: "POST",
-        url: "http://vouapp-api.herokuapp.com/partner/campaign",
+        url: "https://vouapp-api.herokuapp.com/partner/campaign",
         headers: {
             token: `JWT ${token}`
         },
@@ -122,7 +122,7 @@ export const createCampaignRequest = (
 const doGetAllCampaigns = async (token, id) => {
     const res = await axios({
         method: "GET",
-        url: `http://vouapp-api.herokuapp.com/campaign/partner/${id}`,
+        url: `https://vouapp-api.herokuapp.com/campaign/partner/${id}`,
         headers: {
             token: `JWT ${token}`
         }

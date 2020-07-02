@@ -4,7 +4,7 @@ import userConstants from "../constants";
 function doRegister(email, password) {
   return axios({
     method: "POST",
-    url: "http://vouapp-api.herokuapp.com/auth/signup",
+    url: "https://vouapp-api.herokuapp.com/auth/signup",
     data: {
       username: email,
       password,
@@ -51,7 +51,7 @@ export const registerRequest = (email, password) => async (dispatch) => {
 function doLogin(email, password) {
   return axios({
     method: "POST",
-    url: "http://vouapp-api.herokuapp.com/auth/signin",
+    url: "https://vouapp-api.herokuapp.com/auth/signin",
     data: {
       username: email,
       password,

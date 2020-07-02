@@ -63,7 +63,7 @@ import userConstants from "../constants";
 const doGetMyVouchers = (token) => {
   const res = axios({
     method: "GET",
-    url: "http://vouapp-api.herokuapp.com/partner/voucher/me",
+    url: "https://vouapp-api.herokuapp.com/partner/voucher/me",
     headers: {
       token: `JWT ${token}`
     }
