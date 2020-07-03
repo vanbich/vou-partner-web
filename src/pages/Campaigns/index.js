@@ -51,6 +51,7 @@ import {
   getAllCampaignsRequest
 } from "../../actions/CampaignActions";
 import { getMyVouchersRequest } from "../../actions/VoucherActions";
+import { storage } from "../../firebase/index";
 
 const style = theme => ({
   root: {
@@ -112,6 +113,7 @@ class Campaign extends Component {
       error: null,
       name: "",
       promo_code: "",
+      imagePreview: "",
       imageCampaign:
         "https://cache.redgiant.com/wp-assets/2019/07/Summer19-Sale-Teaser-Blog.jpg",
       description: "",
@@ -119,7 +121,8 @@ class Campaign extends Component {
       end_time: new Date(),
       num_of_voucher: 0,
       discount: 0,
-      open: false
+      open: false,
+      isUploadImg: null
     };
   }
 
@@ -162,6 +165,12 @@ class Campaign extends Component {
     });
   };
 
+  handleUploadImgFail = () => {
+    this.setState({
+      isUploadImg: null
+    });
+  };
+
   handleClose = () => {
     this.setState({
       open: false
@@ -172,14 +181,10 @@ class Campaign extends Component {
 
   handleImageChange = e => {
     e.preventDefault();
-    let file = e.target.files[0];
-    let reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      this.setState({
-        imageCampaign: reader.result
-      });
-    };
+    this.setState({
+      imagePreview: URL.createObjectURL(e.target.files[0]),
+      imageCampaign: e.target.files[0]
+    });
   };
 
   handleChangeDescript = e => {
@@ -246,18 +251,61 @@ class Campaign extends Component {
     const { id } = this.props;
     const token = cookie.load("token");
 
-    this.props.doCreateCampaign(
-      name,
-      imageCampaign,
-      id,
-      discount,
-      num_of_voucher,
-      promo_code,
-      "url",
-      description,
-      this.dateToString(start_time),
-      this.dateToString(end_time),
-      token
+    const uploadTask = storage
+      .ref(`/campaigns/${imageCampaign.name}`)
+      .put(imageCampaign);
+
+    uploadTask.on(
+      "state_changed",
+      snapShot => {
+        //takes a snap shot of the process as it is happening
+        console.log(snapShot);
+      },
+      err => {
+        //catches the errors
+        console.log("abcnd");
+
+        this.setState({
+          isUploadImg: err
+        });
+      },
+      () => {
+        storage
+          .ref("campaigns")
+          .child(imageCampaign.name)
+          .getDownloadURL()
+          .then(fireBaseUrl => {
+            console.log("url", fireBaseUrl);
+            console.log(
+              "doCreateCampaign",
+              name,
+              fireBaseUrl,
+              id,
+              discount,
+              num_of_voucher,
+              promo_code,
+              "url",
+              description,
+              this.dateToString(start_time),
+              this.dateToString(end_time),
+              token
+            );
+
+            this.props.doCreateCampaign(
+              name,
+              fireBaseUrl,
+              id,
+              discount,
+              num_of_voucher,
+              promo_code,
+              "url",
+              description,
+              this.dateToString(start_time),
+              this.dateToString(end_time),
+              token
+            );
+          });
+      }
     );
   };
 
@@ -308,12 +356,13 @@ class Campaign extends Component {
     const {
       name,
       promo_code,
-      imageCampaign,
+      imagePreview,
       description,
       start_time,
       end_time,
       discount,
-      num_of_voucher
+      num_of_voucher,
+      isUploadImg
     } = this.state;
 
     const token = cookie.load("token");
@@ -322,7 +371,6 @@ class Campaign extends Component {
       return <Redirect to="/sign-in" />;
     }
 
-    console.log("image", typeof imageCampaign);
     return (
       <DashboardLayout title="Campaign">
         <Grid
@@ -401,7 +449,7 @@ class Campaign extends Component {
                 <Grid item>
                   <div className={classes.displayImage}>
                     <img
-                      src={imageCampaign}
+                      src={imagePreview}
                       alt={"Campaign"}
                       className={classes.productImage}
                     />
@@ -422,7 +470,7 @@ class Campaign extends Component {
                       id="contained-button-file"
                       multiple
                       type="file"
-                      // onChange={this.handleImageChange}
+                      onChange={this.handleImageChange}
                     />
                     <label htmlFor="contained-button-file">
                       <Button component="span" className={classes.upload}>
@@ -586,6 +634,13 @@ class Campaign extends Component {
                     </Typography>
                   )}
                 </Grid>
+                {isUploadImg && (
+                  <Grid item>
+                    <Typography className={classes.fieldError}>
+                      {isUploadImg}
+                    </Typography>
+                  </Grid>
+                )}
                 {isLoading && !messageError && (
                   <div className={classes.progressWrapper}>
                     <CircularProgress />

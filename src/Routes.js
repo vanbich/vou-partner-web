@@ -56,7 +56,7 @@ class Routes extends Component {
             alignItems="center"
             style={{ height: 200 }}
           >
-            <img src="'/images/banners/error.png" alt="Error icon" />
+            <img src="/images/banners/error.png" alt="Error icon" />
             <Typography style={{ color: "red", fontWeight: "bold" }}>
               {messageError}
             </Typography>

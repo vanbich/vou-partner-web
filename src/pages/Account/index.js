@@ -5,6 +5,7 @@ import { Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import validate from "validate.js";
 import cookie from "react-cookies";
+import _ from "underscore";
 
 // Material components
 import {
@@ -35,7 +36,7 @@ import {
   getInfoRequest,
   updateInfoRequest
 } from "../../actions/UserActions";
-import _ from "underscore";
+import { storage } from "../../firebase/index";
 
 // Component styles
 const styles = theme => ({
@@ -85,9 +86,9 @@ class Account extends Component {
       email: "",
       phone: ""
     },
-    avatar:
+    avatarPreview:
       "https://www.google.com/search?q=tocotoco+logo&tbm=isch&ved=2ahUKEwi1treRl8fpAhWTIqYKHUMUDk0Q2-cCegQIABAA&oq=tocotoco+logo&gs_lcp=CgNpbWcQAzICCAAyBAgAEB4yBggAEAgQHjIGCAAQCBAeOgYIABAFEB46BAgAEBhQ5RVYnR5gzCJoAHAAeACAAVqIAZ8DkgEBNZgBAKABAaoBC2d3cy13aXotaW1n&sclient=img&ei=fp7HXrX_HpPFmAXDqLjoBA&bih=664&biw=1366&client=firefox-b-d#imgrc=ae-im1TyccvvTM",
-
+    avatar: "",
     touched: {
       email: false,
       address: false,
@@ -116,14 +117,15 @@ class Account extends Component {
   }, 300);
 
   componentDidMount() {
-    const { display_name, email, address, phone } = this.props;
+    const { display_name, email, address, phone, avatar } = this.props;
     this.setState({
       values: {
         display_name: display_name,
         address: address,
         email: email,
         phone: phone
-      }
+      },
+      avatarPreview: avatar
     });
   }
 
@@ -137,27 +139,59 @@ class Account extends Component {
     this.setState(newState, this.validateForm);
   };
 
-  handleUpdateInfo = () => {
-    const avatar =
-      "https://storage.googleapis.com/senpoint-media-release/static/common/img/logo_image/eda8ef34036b527a9db9abf690d9af26.jpg";
+  handleImageChange = e => {
+    e.preventDefault();
+    this.setState({
+      avatarPreview: URL.createObjectURL(e.target.files[0]),
+      avatar: e.target.files[0]
+    });
+  };
 
-    const { values } = this.state;
+  handleUpdateInfo = () => {
+    const { values, avatar } = this.state;
     const token = cookie.load("token");
 
     console.log("update info", values, avatar);
 
-    this.props.doUpdateInfo(
-      values.display_name,
-      values.phone,
-      values.email,
-      values.address,
-      avatar,
-      token
+    const uploadTask = storage.ref(`/avatars/${avatar.name}`).put(avatar);
+
+    uploadTask.on(
+      "state_changed",
+      snapShot => {
+        //takes a snap shot of the process as it is happening
+        console.log(snapShot);
+      },
+      err => {
+        //catches the errors
+        console.log("abcnd");
+
+        this.setState({
+          isUploadImg: err
+        });
+      },
+      () => {
+        storage
+          .ref("avatars")
+          .child(avatar.name)
+          .getDownloadURL()
+          .then(fireBaseUrl => {
+            console.log("url", fireBaseUrl, values, token);
+
+            this.props.doUpdateInfo(
+              values.display_name,
+              values.phone,
+              values.email,
+              values.address,
+              fireBaseUrl,
+              token
+            );
+          });
+      }
     );
   };
 
   handleUpdateInfoFail = () => {
-    const { display_name, email, address, phone } = this.props;
+    const { display_name, email, address, phone, avatar } = this.props;
 
     this.props.clear();
     this.setState({
@@ -166,7 +200,9 @@ class Account extends Component {
         address: address,
         email: email,
         phone: phone
-      }
+      },
+      avatarPreview: avatar,
+      avatar: ""
     });
   };
 
@@ -185,11 +221,10 @@ class Account extends Component {
       phone,
       messageError,
       isSuccess,
-      isLoading,
-        avatar
+      isLoading
     } = this.props;
 
-    const { touched, errors, isValid } = this.state;
+    const { touched, errors, isValid, avatarPreview } = this.state;
 
     const showDisplayError = touched.display_name && errors.display_name;
     const showEmailError = touched.email && errors.email;
@@ -274,10 +309,8 @@ class Account extends Component {
               <Grid item lg={4} md={6} xl={4} xs={12}>
                 <AccountProfile
                   username={display_name}
-                  avatar={avatar}
-                  // onChangeAvatar={event => {
-                  //   this.state.avatar = event.target.files[0];
-                  // }}
+                  avatar={avatarPreview}
+                  onChangeAvatar={this.handleImageChange}
                 />
               </Grid>
             </Grid>

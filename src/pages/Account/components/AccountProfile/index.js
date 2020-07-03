@@ -17,7 +17,7 @@ const useStyle = makeStyles(them => ({
     display: "flex"
   },
   info: {
-    marginTop: "20px"
+    textAlign: "center"
   },
   locationText: {
     marginTop: them.spacing(1),
@@ -56,17 +56,15 @@ function AccountProfile(props) {
     <Portlet {...rest} className={classes.root}>
       <PortletContent>
         <div className={classes.details}>
-          <Grid container direction="column" alignContent="center">
-            <Grid item xs={6}>
+          <Grid container direction="column" alignContent="center" justify="center" spacing={2}>
+            <Grid item>
               <Avatar
                 className={classes.avatar}
                 src={avatar ? avatar : "/images/avatars/avatar_1.png"}
               />
             </Grid>
-            <Grid item xs={6}>
-              <div className={classes.info}>
-                <Typography variant="h6">{username}</Typography>
-              </div>
+            <Grid item>
+              <Typography variant="h6" className={classes.info}>{username}</Typography>
             </Grid>
           </Grid>
         </div>

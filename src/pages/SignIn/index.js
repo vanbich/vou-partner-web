@@ -36,15 +36,15 @@ import {clear, loginRequest} from "../../actions/AthenticationActions";
 class SignIn extends Component {
   state = {
     values: {
-      email: "",
+      username: "",
       password: ""
     },
     touched: {
-      email: false,
+      username: false,
       password: false
     },
     errors: {
-      email: null,
+      username: null,
       password: null
     },
     isValid: false,
@@ -76,7 +76,7 @@ class SignIn extends Component {
   handleSignIn = () => {
     const { values } = this.state;
     this.setState({ isLoading: true });
-    this.props.doSignIn(values.email, values.password);
+    this.props.doSignIn(values.username, values.password);
   };
 
 
@@ -85,7 +85,7 @@ class SignIn extends Component {
     this.setState({
       isLoading: false,
       values: {
-        email: "",
+        username: "",
         password: ""
       },
     });
@@ -102,7 +102,7 @@ class SignIn extends Component {
 
     const token = cookie.load('token');
 
-    const showEmailError = touched.email && errors.email;
+    const showEmailError = touched.username && errors.username;
     const showPasswordError = touched.password && errors.password;
 
     if (token) {
@@ -148,20 +148,20 @@ class SignIn extends Component {
                 <Grid item lg={6} className={classes.fields}>
                   <TextField
                       className={classes.textField}
-                      label="Email address"
-                      name="email"
+                      label="Username"
+                      name="username"
                       onChange={event =>
-                          this.handleFieldChange("email", event.target.value)
+                          this.handleFieldChange("username", event.target.value)
                       }
                       type="text"
-                      value={values.email}
+                      value={values.username}
                       variant="outlined"
                   />
                 </Grid>
                 <Grid item lg={6} className={classes.fields}>
                   {showEmailError && (
                       <Typography className={classes.fieldError} variant="body2">
-                        {errors.email[0]}
+                        {errors.username[0]}
                       </Typography>
                   )}
                 </Grid>

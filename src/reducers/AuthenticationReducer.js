@@ -5,7 +5,7 @@ const initState = {
   isRegister: false,
   messageError: null,
   token: null,
-  isLoading: false
+  isLoading: false,
 };
 
 function saveCookies(name, value, exp) {
@@ -30,7 +30,7 @@ const Authentication = (state = initState, action) => {
       state.isLoading = false;
       state.messageError = null;
 
-      saveCookies('token', state.token, 7);
+      saveCookies('token', state.token, 1);
 
       return { ...state };
     }
