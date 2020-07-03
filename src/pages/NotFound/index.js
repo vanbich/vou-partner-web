@@ -36,9 +36,9 @@ class NotFound extends Component {
           <Grid item lg={6} xs={12}>
             <div className={classes.content}>
               <img
-                alt="Under development"
-                className={classes.image}
+                alt="Not found"
                 src="/images/banners/not-found.png"
+                className={classes.image}
               />
               <Typography variant="h1">Oops! Page does not found</Typography>
               <Link to="/">
