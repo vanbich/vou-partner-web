@@ -9,11 +9,11 @@ import { green } from "../../common/colors";
 
 const useStyle = makeStyles(theme => ({
     root:{
-      margin: theme.spacing.unit * 5
+      margin: theme.spacing(5)
     },
   content: {
     color: green,
-    marginLeft: theme.spacing.unit * 2
+    marginLeft: theme.spacing(2)
   },
   icon: {
     color: green

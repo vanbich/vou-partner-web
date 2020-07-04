@@ -1,8 +1,9 @@
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import 'firebase/analytics';
 import 'firebase/storage';
+import 'firebase/firestore';
 
-var firebaseConfig = {
+const firebaseConfig = {
     apiKey: "AIzaSyDS3pdn8cYDdzGFYPHaG7nKpSDYLe3H6bk",
     authDomain: "vou-partner.firebaseapp.com",
     databaseURL: "https://vou-partner.firebaseio.com",
@@ -13,8 +14,7 @@ var firebaseConfig = {
     measurementId: "G-K1LTKJZ79X"
 };
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-firebase.analytics();
+firebase.initializeApp(firebaseConfig).firestore().settings({host: "localhost:3000", ssl: false});
 
 const storage = firebase.storage();
 
