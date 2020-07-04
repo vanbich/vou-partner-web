@@ -149,11 +149,12 @@ class Account extends Component {
 
   handleUpdateInfo = () => {
     const { values, avatar } = this.state;
+    const { id } = this.props;
     const token = cookie.load("token");
 
     console.log("update info", values, avatar);
 
-    const uploadTask = storage.ref(`/avatars/${avatar.name}`).put(avatar);
+    const uploadTask = storage.ref(`${id}/avatars/${avatar.name}`).put(avatar);
 
     uploadTask.on(
       "state_changed",
@@ -171,7 +172,7 @@ class Account extends Component {
       },
       () => {
         storage
-          .ref("avatars")
+          .ref(`${id}/avatars`)
           .child(avatar.name)
           .getDownloadURL()
           .then(fireBaseUrl => {
@@ -375,6 +376,7 @@ Account.propTypes = {
 const mapStateToProps = state => {
   return {
     isLogin: state.Authentication.isLogin,
+    id: state.User.id,
     display_name: state.User.display_name,
     username: state.User.username,
     email: state.User.email,

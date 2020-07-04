@@ -252,7 +252,7 @@ class Campaign extends Component {
     const token = cookie.load("token");
 
     const uploadTask = storage
-      .ref(`/campaigns/${imageCampaign.name}`)
+      .ref(`${id}/campaigns/${imageCampaign.name}`)
       .put(imageCampaign);
 
     uploadTask.on(
@@ -271,7 +271,7 @@ class Campaign extends Component {
       },
       () => {
         storage
-          .ref("campaigns")
+          .ref(`${id}/campaigns/`)
           .child(imageCampaign.name)
           .getDownloadURL()
           .then(fireBaseUrl => {
