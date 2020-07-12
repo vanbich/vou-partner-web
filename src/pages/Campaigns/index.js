@@ -175,26 +175,6 @@ class Campaign extends Component {
 
         if (voucher) {
           data[i].voucher = voucher;
-          data[i].games = [
-            {
-              id: 1,
-              name: "Tâng bóng",
-              accept_point: 10,
-              point: 20,
-              logo: "/images/products/product_1.png",
-              description:
-                "Tâng bóng và giữ khi bóng rơi xuống liên tục nếu không giữ được sẽ kết thúc màn chơi"
-            },
-            {
-              id: 2,
-              name: "Lật ảnh",
-              accept_point: 3,
-              point: 6,
-              logo: "/images/products/product_2.png",
-              description:
-                "Tìm những cặp ảnh giống nhau với số lượt mở ảnh cho trước nếu hết lượt mở ảnh mà chưa mở hết thì thua"
-            }
-          ];
         } else {
           data[i].voucher = null;
         }

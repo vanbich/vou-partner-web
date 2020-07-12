@@ -1,21 +1,44 @@
 import userConstants from "../constants";
+import { forEach } from "underscore";
 
 const initState = {
   myCampaigns: [],
   isSuccessful: false,
   messageError: "",
   isLoading: false,
-  isDeleted: false,
+  isDeleted: false
 };
 
 const Campaigns = (state = initState, action) => {
   switch (action.type) {
     case userConstants.GET_MY_CAMPAIGN_SUCCESS: {
       state.myCampaigns = [...action.payload.res.data];
+      for (let i = 0; i < state.myCampaigns.length; i++) {
+        state.myCampaigns[i].games = [
+          {
+            id: 1,
+            name: "Tâng bóng",
+            accept_point: 10,
+            point: 20,
+            logo: "/images/products/product_1.png",
+            description:
+              "Tâng bóng và giữ khi bóng rơi xuống liên tục nếu không giữ được sẽ kết thúc màn chơi"
+          },
+          {
+            id: 2,
+            name: "Lật ảnh",
+            accept_point: 3,
+            point: 6,
+            logo: "/images/products/product_2.png",
+            description:
+              "Tìm những cặp ảnh giống nhau với số lượt mở ảnh cho trước nếu hết lượt mở ảnh mà chưa mở hết thì thua"
+          }
+        ];
+      }
       state.isLoading = false;
       state.isSuccessful = false;
       state.isDeleted = false;
-      return { ...state};
+      return JSON.parse(JSON.stringify(state));
     }
     case userConstants.GET_MY_CAMPAIGN_REQUEST: {
       state.isLoading = true;
@@ -57,23 +80,23 @@ const Campaigns = (state = initState, action) => {
       }
       return { ...state };
     }
-    case userConstants.DELETE_CAMPAIGN_REQUEST:{
+    case userConstants.DELETE_CAMPAIGN_REQUEST: {
       state.isLoading = true;
       state.isDeleted = false;
       state.messageError = "";
-      return {...state}
+      return { ...state };
     }
-    case userConstants.DELETE_CAMPAIGN_FAILURE:{
+    case userConstants.DELETE_CAMPAIGN_FAILURE: {
       state.isLoading = false;
       state.isDeleted = false;
       state.messageError = action.payload.err.message;
-      return {...state}
+      return { ...state };
     }
-    case userConstants.DELETE_CAMPAIGN_SUCCESS:{
+    case userConstants.DELETE_CAMPAIGN_SUCCESS: {
       state.isLoading = false;
       state.isDeleted = true;
       state.messageError = null;
-      return {...state}
+      return { ...state };
     }
     case userConstants.REFRESH_STATE_CAMPAIGN: {
       state.isLoading = false;
