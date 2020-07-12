@@ -13,10 +13,10 @@ export default theme => ({
         marginRight: theme.spacing(1)
     },
     button:{
-        backgroundColor: "#62cdd9",
+        backgroundColor: "#ffa4a8",
         color: "#ffffff",
         '&:hover':{
-            backgroundColor: "#62cdd9",
+            backgroundColor: "#ffa4a8",
             color: "#ffffff",
         }
     },

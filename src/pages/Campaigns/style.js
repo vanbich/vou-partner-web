@@ -19,17 +19,17 @@ export default theme => ({
   },
   button: {
     color: "#ffffff",
-    backgroundColor: "#62cdd9",
+    backgroundColor: "#ffa4a8",
     "&:hover": {
       color: "#ffffff",
-      backgroundColor: "#62cdd9"
+      backgroundColor: "#ffa4a8"
     }
   },
   upload: {
-    color: "#62cdd9",
+    color: "#ffa4a8",
     backgroundColor: "#ffffff",
     "&:hover": {
-      color: "#62cdd9",
+      color: "#ffa4a8",
       backgroundColor: "#ffffff"
     }
   },
@@ -51,7 +51,9 @@ export default theme => ({
     marginLeft: theme.spacing(2)
   },
   icon: {
-    color: "green"
+    color: "green",
+    width: 50,
+    height: 50
   },
   errorIcon: {
     color: "red"
@@ -67,8 +69,8 @@ export default theme => ({
     fontSize: 11,
     backgroundColor: "#ebebeb",
     textTransform: "uppercase",
-    width: 70,
-    textAlign: "center"
+    textAlign: "center",
+    minWidth: 70
   },
   textfield: {
     marginLeft: theme.spacing(1),
@@ -83,12 +85,49 @@ export default theme => ({
   displayImage: {
     maxHeight: "50%",
     maxWidth: "80%",
+    minWidth: 400,
+    minHeight: 100,
     display: "flex",
     margin: "0 auto",
     justifyContent: "center",
     padding: theme.spacing(2),
-    border: "2px dashed #62cdd9",
+    border: "2px dashed #ffa4a8",
     borderRadius: "2%",
     objectFit: "scale-down"
-  }
+  },
+  logoWrapper: {
+    height: 50,
+    width: 50,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    objectFit: "scale-down"
+  },
+  logo: {
+    maxWidth: "100%",
+    maxHeight: "100%",
+  },
+  cardGame:{
+    width: '30%',
+    padding: theme.spacing(1)
+  },
+  gameTitle:{
+    fontSize: 11,
+    textTransform: "uppercase",
+    textAlign: "center"
+  },
+  titlePart: {
+    fontSize: 14,
+    color: "#000",
+    textTransform: "uppercase",
+    textAlign: "center",
+    fontWeight: 'bold'
+  },
+  point: {
+    padding: 10,
+    fontSize: 11,
+    backgroundColor: "#ebebeb",
+    textTransform: "uppercase",
+    textAlign: "center",
+  },
 });

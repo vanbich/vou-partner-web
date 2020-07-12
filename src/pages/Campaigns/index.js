@@ -4,6 +4,8 @@ import { Link, Redirect } from "react-router-dom";
 // Externals
 import PropTypes from "prop-types";
 import cookie from "react-cookies";
+import validate from "validate.js";
+import _ from "underscore";
 
 // Material helpers
 import { withStyles } from "@material-ui/core";
@@ -25,6 +27,8 @@ import MuiDialogContent from "@material-ui/core/DialogContent";
 import MuiDialogActions from "@material-ui/core/DialogActions";
 import Paper from "@material-ui/core/Paper/Paper";
 import InputBase from "@material-ui/core/InputBase/InputBase";
+import Card from "@material-ui/core/Card";
+import Checkbox from "@material-ui/core/Checkbox";
 
 // Material icons
 import {
@@ -32,8 +36,7 @@ import {
   ChevronLeft as ChevronLeftIcon
 } from "@material-ui/icons";
 import CloseIcon from "@material-ui/icons/Close";
-import CheckCircleOutlinedIcon from "@material-ui/icons/CheckCircleOutlined";
-
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 // Shared layouts
 import { Dashboard as DashboardLayout } from "../../layouts";
 
@@ -53,6 +56,9 @@ import {
 import { getMyVouchersRequest } from "../../actions/VoucherActions";
 import { storage } from "../../firebase/index";
 
+// Form validation schema
+import schema from "./schema";
+
 const style = theme => ({
   root: {
     margin: 0,
@@ -69,12 +75,7 @@ const style = theme => ({
 const DialogTitle = withStyles(style)(props => {
   const { children, classes, onClose, ...other } = props;
   return (
-    <MuiDialogTitle
-      disableTypography
-      className={classes.root}
-      {...other}
-      style={{ borderBottom: "2px dashed #62cdd9" }}
-    >
+    <MuiDialogTitle disableTypography className={classes.root} {...other}>
       <Typography variant="h6">{children}</Typography>
       {onClose ? (
         <IconButton
@@ -91,8 +92,7 @@ const DialogTitle = withStyles(style)(props => {
 
 const DialogContent = withStyles(theme => ({
   root: {
-    padding: theme.spacing(2),
-    borderBottom: "2px dashed #62cdd9"
+    padding: theme.spacing(2)
   }
 }))(MuiDialogContent);
 
@@ -103,26 +103,58 @@ const DialogActions = withStyles(theme => ({
   }
 }))(MuiDialogActions);
 
+const GreenCheckbox = withStyles({
+  root: {
+    color: "#ffa4a8",
+    "&$checked": {
+      color: "#ffa4a8"
+    }
+  },
+  checked: {}
+})(props => <Checkbox color="default" {...props} />);
+
 class Campaign extends Component {
   constructor(props) {
     super(props);
     this.wrapper = React.createRef();
     this.state = {
+      values:{
+        name: "",
+        promo_code: "",
+        description: "",
+        num_of_voucher: 0,
+        discount: 0,
+      },
+
+      touched: {
+        name: false,
+        promo_code: false,
+        description: false,
+        num_of_voucher: false,
+        discount: false,
+      },
+      errors: {
+        name: null,
+        promo_code: null,
+        description: null,
+        num_of_voucher: null,
+        discount: null,
+      },
+
       limit: 6,
       productsTotal: 0,
-      error: null,
-      name: "",
-      promo_code: "",
+      isValid: false,
       imagePreview: "",
       imageCampaign:
         "https://cache.redgiant.com/wp-assets/2019/07/Summer19-Sale-Teaser-Blog.jpg",
-      description: "",
       start_time: new Date(),
       end_time: new Date(),
-      num_of_voucher: 0,
-      discount: 0,
+      gamesChoose: [],
       open: false,
-      isUploadImg: null
+      isUploadImg: null,
+      part1: true,
+      part2: false,
+      part3: false
     };
   }
 
@@ -142,6 +174,26 @@ class Campaign extends Component {
 
         if (voucher) {
           data[i].voucher = voucher;
+          data[i].games = [
+            {
+              id: 1,
+              name: "Tâng bóng",
+              accept_point: 10,
+              point: 20,
+              logo: "/images/products/product_1.png",
+              description:
+                  "Tâng bóng và giữ khi bóng rơi xuống liên tục nếu không giữ được sẽ kết thúc màn chơi"
+            },
+            {
+              id: 2,
+              name: "Lật ảnh",
+              accept_point: 3,
+              point: 6,
+              logo: "/images/products/product_2.png",
+              description:
+                  "Tìm những cặp ảnh giống nhau với số lượt mở ảnh cho trước nếu hết lượt mở ảnh mà chưa mở hết thì thua"
+            },
+          ]
         } else {
           data[i].voucher = null;
         }
@@ -152,12 +204,53 @@ class Campaign extends Component {
 
     console.log("data", data);
 
-    return [...data];
+    return JSON.parse(JSON.stringify(data));
   };
 
   componentDidMount() {
     this.getCampaigns();
+    this.generateGames();
   }
+
+  generateGames = () =>{
+    const { games } = this.props;
+    let { gamesChoose } = this.state;
+    gamesChoose = [];
+    games.map(game => {
+      game.acceptPoint = 0;
+      game.isCheck = false;
+      gamesChoose.push(game);
+      return gamesChoose;
+    });
+
+    this.setState({
+      gamesChoose: JSON.parse(JSON.stringify(gamesChoose))
+    });
+  };
+
+  showPart1 = () => {
+    this.setState({
+      part1: true,
+      part2: false,
+      part3: false
+    });
+  };
+
+  showPart2 = () => {
+    this.setState({
+      part1: false,
+      part2: true,
+      part3: false
+    });
+  };
+
+  showPart3 = () => {
+    this.setState({
+      part1: false,
+      part2: false,
+      part3: true
+    });
+  };
 
   handleClickOpen = () => {
     this.setState({
@@ -186,6 +279,29 @@ class Campaign extends Component {
       imageCampaign: e.target.files[0]
     });
   };
+
+
+  validateForm = _.debounce(() => {
+    const { values } = this.state;
+
+    const newState = { ...this.state };
+    const errors = validate(values, schema);
+
+    newState.errors = errors || {};
+    newState.isValid = !errors;
+
+    this.setState(newState);
+  }, 300);
+
+  handleFieldChange = (field, value) => {
+    const newState = { ...this.state };
+
+    newState.touched[field] = true;
+    newState.values[field] = value;
+
+    this.setState(newState, this.validateForm);
+  };
+
 
   handleChangeDescript = e => {
     this.setState({
@@ -229,6 +345,30 @@ class Campaign extends Component {
     });
   };
 
+  handleGameChoose = e => {
+    const { gamesChoose } = this.state;
+
+    const itemCheck = gamesChoose.find(
+      item => item.id === parseInt(e.target.name)
+    );
+    itemCheck.isCheck = e.target.checked;
+    this.setState({
+      gamesChoose: [...gamesChoose]
+    });
+    console.log("gamesChoose", gamesChoose);
+  };
+
+  handleChangeGamePoint = (e, id) => {
+    const { gamesChoose } = this.state;
+
+    const itemChoose = gamesChoose.find(item => item.id === parseInt(id));
+    itemChoose.acceptPoint = e.target.value;
+    this.setState({
+      gamesChoose: [...gamesChoose]
+    });
+    console.log("gamesChoose2", gamesChoose);
+  };
+
   dateToString = date => {
     return `${date.getFullYear()}-${
       date.getMonth() + 1 < 10
@@ -246,10 +386,13 @@ class Campaign extends Component {
       start_time,
       end_time,
       discount,
-      num_of_voucher
+      num_of_voucher,
+      gamesChoose
     } = this.state;
     const { id } = this.props;
     const token = cookie.load("token");
+
+    const campaignGames = gamesChoose.filter(game => game.isCheck === true);
 
     const uploadTask = storage
       .ref(`${id}/campaigns/${imageCampaign.name}`)
@@ -288,6 +431,7 @@ class Campaign extends Component {
               description,
               this.dateToString(start_time),
               this.dateToString(end_time),
+              campaignGames,
               token
             );
 
@@ -311,16 +455,23 @@ class Campaign extends Component {
 
   handleCreateCampaignFail = () => {
     this.props.clear();
+    this.generateGames();
     this.setState({
-      name: "",
-      promo_code: "",
+      values:{
+        name: "",
+        promo_code: "",
+        description: "",
+        num_of_voucher: 0,
+        discount: 0,
+      },
       imageCampaign:
         "https://cache.redgiant.com/wp-assets/2019/07/Summer19-Sale-Teaser-Blog.jpg",
-      description: "",
       start_time: new Date(),
       end_time: new Date(),
-      num_of_voucher: 0,
-      discount: 0
+      imagePreview: '',
+      part1: true,
+      part2: false,
+      part3: false,
     });
   };
 
@@ -328,7 +479,7 @@ class Campaign extends Component {
     const { myVouchers, myCampaigns } = this.props;
     const campaigns = this.groupData(myCampaigns, myVouchers);
 
-    if (myCampaigns.length === 0 || myVouchers.length === 0) {
+    if (myCampaigns.length === 0 && myVouchers.length === 0) {
       return (
         <Typography variant="h6" style={{ textAlign: "center" }}>
           There are no products available
@@ -354,15 +505,18 @@ class Campaign extends Component {
   render() {
     const { classes, isSuccessful, messageError, isLoading } = this.props;
     const {
-      name,
-      promo_code,
+      values,
+      touched,
+      errors,
+      isValid,
       imagePreview,
-      description,
       start_time,
       end_time,
-      discount,
-      num_of_voucher,
-      isUploadImg
+      isUploadImg,
+      gamesChoose,
+      part1,
+      part2,
+      part3
     } = this.state;
 
     const token = cookie.load("token");
@@ -370,6 +524,13 @@ class Campaign extends Component {
     if (!token) {
       return <Redirect to="/sign-in" />;
     }
+
+    const showNameError = touched.name && errors.name;
+    const showPromoCodeError = touched.promo_code && errors.promo_code;
+    const showDiscountError = touched.discount && errors.discount;
+    const showNumbersError = touched.num_of_voucher && errors.num_of_voucher;
+    const showDescribeError = touched.description && errors.description;
+
 
     return (
       <DashboardLayout title="Campaign">
@@ -426,250 +587,443 @@ class Campaign extends Component {
           <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>
             New campaign
           </DialogTitle>
-          <DialogContent className={classes.dialog}>
-            {isSuccessful ? (
-              <Grid
-                container
-                direction="row"
-                justify="center"
-                alignContent="center"
-              >
-                <CheckCircleOutlinedIcon className={classes.icon} />
-                <Typography className={classes.successContent} variant="h4">
-                  Successful
-                </Typography>
-              </Grid>
-            ) : (
-              <Grid
-                container
-                direction="column"
-                spacing={2}
-                alignContent="center"
-              >
-                <Grid item>
-                  <div className={classes.displayImage}>
-                    <img
-                      src={imagePreview}
-                      alt={"Campaign"}
-                      className={classes.productImage}
-                    />
-                  </div>
-                </Grid>
-                <Grid item>
-                  <div
-                    style={{
-                      width: "100%",
-                      height: "50px",
-                      justifyContent: "center",
-                      display: "flex"
-                    }}
-                  >
-                    <input
-                      accept="image/*"
-                      className={classes.input}
-                      id="contained-button-file"
-                      multiple
-                      type="file"
-                      onChange={this.handleImageChange}
-                    />
-                    <label htmlFor="contained-button-file">
-                      <Button component="span" className={classes.upload}>
-                        Upload
-                      </Button>
-                    </label>
-                  </div>
-                </Grid>
-                <Grid item>
-                  <Grid
-                    container
-                    direction="row"
-                    justify="center"
-                    alignItems="center"
-                    spacing={3}
-                  >
-                    <Grid item xs={6}>
-                      <Paper
-                        component="form"
-                        className={classes.paper}
-                        variant="outlined"
-                      >
-                        <Typography className={classes.typo}>name</Typography>
-                        <InputBase
-                          className={classes.textfield}
-                          value={name}
-                          placeholder="Your campaign name"
-                          onChange={this.handleChangeCampaignName}
-                        />
-                      </Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Paper
-                        component="form"
-                        className={classes.paper}
-                        variant="outlined"
-                      >
-                        <Typography className={classes.typo}>Code</Typography>
-                        <InputBase
-                          placeholder="Voucher code"
-                          className={classes.textfield}
-                          value={promo_code}
-                          onChange={this.handleChangeCode}
-                        />
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item>
-                  <Grid
-                    container
-                    direction="row"
-                    justify="center"
-                    alignItems="center"
-                    spacing={3}
-                  >
-                    <Grid item xs={6}>
-                      <Paper
-                        component="form"
-                        className={classes.paper}
-                        variant="outlined"
-                      >
-                        <Typography className={classes.typo}>
-                          Discount
-                        </Typography>
-                        <InputBase
-                          type="number"
-                          className={classes.textfield}
-                          value={discount}
-                          onChange={this.handleChangeDiscount}
-                        />
-                      </Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Paper
-                        component="form"
-                        className={classes.paper}
-                        variant="outlined"
-                      >
-                        <Typography className={classes.typo}>
-                          Numbers
-                        </Typography>
-                        <InputBase
-                          type="number"
-                          className={classes.textfield}
-                          value={num_of_voucher}
-                          onChange={this.handleChangeNumbers}
-                        />
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item>
-                  <Grid container direction="row" spacing={3}>
-                    <Grid item xs={6}>
-                      <Paper
-                        component="form"
-                        className={classes.paper}
-                        variant="outlined"
-                      >
-                        <Typography className={classes.typo}>Begin</Typography>
-                        <MuiPickersUtilsProvider utils={MomentUtils} fullWidth>
-                          <DatePicker
-                            width="100%"
-                            disableToolbar
-                            format="DD/MM/YYYY"
-                            value={start_time}
-                            InputProps={{
-                              disableUnderline: true
-                            }}
-                            onChange={this.setNewCampaignStartTime}
-                            className={classes.textfield}
-                          />
-                        </MuiPickersUtilsProvider>
-                      </Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Paper
-                        component="form"
-                        className={classes.paper}
-                        variant="outlined"
-                      >
-                        <Typography className={classes.typo}>End</Typography>
-                        <MuiPickersUtilsProvider utils={MomentUtils} fullWidth>
-                          <DatePicker
-                            width="100%"
-                            disableToolbar
-                            format="DD/MM/YYYY"
-                            InputProps={{
-                              disableUnderline: true
-                            }}
-                            value={end_time}
-                            onChange={this.setNewCampaignEndTime}
-                            className={classes.textfield}
-                          />
-                        </MuiPickersUtilsProvider>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item>
-                  <Paper
-                    component="form"
-                    className={classes.paper}
-                    variant="outlined"
-                  >
-                    <Typography className={classes.typo}>Describe</Typography>
-                    <InputBase
-                      placeholder="Describe something about your campaign"
-                      multiline={true}
-                      className={classes.textfield}
-                      value={description}
-                      onChange={this.handleChangeDescript}
-                    />
-                  </Paper>
-                </Grid>
-                <Grid item>
-                  {messageError && (
-                    <Typography className={classes.fieldError}>
-                      {messageError}
-                    </Typography>
-                  )}
-                </Grid>
-                {isUploadImg && (
+          {isSuccessful ? (
+            <Grid
+              container
+              direction="column"
+              justify="center"
+              alignItems="center"
+              style={{minWidth: 500}}
+            >
+              <CheckCircleIcon className={classes.icon} />
+              <Typography className={classes.successContent} variant="h4">
+                Successful
+              </Typography>
+            </Grid>
+          ) : part1 ? (
+            <>
+              <DialogContent className={classes.dialog}>
+                <Grid
+                  container
+                  direction="column"
+                  spacing={2}
+                  justify="center"
+                  alignItems="center"
+                  style={{minWidth: 500}}
+                >
                   <Grid item>
-                    <Typography className={classes.fieldError}>
-                      {isUploadImg}
-                    </Typography>
+                    <Typography className={classes.titlePart}>Choose image campaign</Typography>
                   </Grid>
-                )}
-                {isLoading && !messageError && (
-                  <div className={classes.progressWrapper}>
-                    <CircularProgress />
-                  </div>
-                )}
-              </Grid>
-            )}
-          </DialogContent>
-          <DialogActions>
-            {!isSuccessful ? (
-              messageError ? (
+                  <Grid item>
+                    <div className={classes.displayImage}>
+                      <img
+                        src={imagePreview}
+                        alt={"Campaign"}
+                        className={classes.productImage}
+                      />
+                    </div>
+                  </Grid>
+                  <Grid item>
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        justifyContent: "center",
+                        display: "flex"
+                      }}
+                    >
+                      <input
+                        accept="image/*"
+                        className={classes.input}
+                        id="contained-button-file"
+                        multiple
+                        type="file"
+                        onChange={this.handleImageChange}
+                      />
+                      <label htmlFor="contained-button-file">
+                        <Button component="span" className={classes.upload}>
+                          Choose image
+                        </Button>
+                      </label>
+                    </div>
+                  </Grid>
+                </Grid>
+              </DialogContent>
+              <DialogActions>
                 <Button
                   autoFocus
-                  onClick={this.handleCreateCampaignFail}
+                  disabled={imagePreview === ''}
+                  onClick={this.showPart2}
                   className={classes.button}
                 >
-                  Try it again
+                  Next
                 </Button>
-              ) : (
+              </DialogActions>
+            </>
+          ) : part2 ? (
+            <>
+              <DialogContent className={classes.dialog}>
+                <Grid
+                  container
+                  direction="column"
+                  spacing={2}
+                  alignContent="center"
+                  style={{minWidth: 500}}
+                >
+                  <Grid item>
+                    <Typography className={classes.titlePart}>Campaign detail</Typography>
+                  </Grid>
+                  <Grid item>
+                    <Grid
+                      container
+                      direction="row"
+                      justify="center"
+                      alignItems="center"
+                      spacing={3}
+                    >
+                      <Grid item xs={6}>
+                        <Paper
+                          component="form"
+                          className={classes.paper}
+                          variant="outlined"
+                        >
+                          <Typography className={classes.typo}>name</Typography>
+                          <InputBase
+                            className={classes.textfield}
+                            value={values.name}
+                            placeholder="Your campaign name"
+                            onChange={event =>
+                                this.handleFieldChange("name", event.target.value)
+                            }
+                          />
+                        </Paper>
+                        {showNameError && (
+                            <Typography className={classes.fieldError} variant="body2">
+                              {errors.name[0]}
+                            </Typography>
+                        )}
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Paper
+                          component="form"
+                          className={classes.paper}
+                          variant="outlined"
+                        >
+                          <Typography className={classes.typo}>Code</Typography>
+                          <InputBase
+                            placeholder="Voucher code"
+                            className={classes.textfield}
+                            value={values.promo_code}
+                            onChange={event =>
+                                this.handleFieldChange("promo_code", event.target.value)
+                            }
+                          />
+                        </Paper>
+                        {showPromoCodeError && (
+                            <Typography className={classes.fieldError} variant="body2">
+                              {errors.promo_code[0]}
+                            </Typography>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item>
+                    <Grid container direction="row" spacing={3}>
+                      <Grid item xs={6}>
+                        <Paper
+                            component="form"
+                            className={classes.paper}
+                            variant="outlined"
+                        >
+                          <Typography className={classes.typo}>
+                            Begin
+                          </Typography>
+                          <MuiPickersUtilsProvider
+                              utils={MomentUtils}
+                              fullWidth
+                          >
+                            <DatePicker
+                                width="100%"
+                                disableToolbar
+                                format="DD/MM/YYYY"
+                                value={start_time}
+                                InputProps={{
+                                  disableUnderline: true
+                                }}
+                                onChange={this.setNewCampaignStartTime}
+                                className={classes.textfield}
+                            />
+                          </MuiPickersUtilsProvider>
+                        </Paper>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Paper
+                            component="form"
+                            className={classes.paper}
+                            variant="outlined"
+                        >
+                          <Typography className={classes.typo}>End</Typography>
+                          <MuiPickersUtilsProvider
+                              utils={MomentUtils}
+                              fullWidth
+                          >
+                            <DatePicker
+                                width="100%"
+                                disableToolbar
+                                format="DD/MM/YYYY"
+                                InputProps={{
+                                  disableUnderline: true
+                                }}
+                                value={end_time}
+                                onChange={this.setNewCampaignEndTime}
+                                className={classes.textfield}
+                            />
+                          </MuiPickersUtilsProvider>
+                        </Paper>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item>
+                    <Grid
+                      container
+                      direction="row"
+                      justify="center"
+                      alignItems="center"
+                      spacing={3}
+                    >
+                      <Grid item xs={6}>
+                        <Paper
+                          component="form"
+                          className={classes.paper}
+                          variant="outlined"
+                        >
+                          <Typography className={classes.typo}>
+                            Discount
+                          </Typography>
+                          <InputBase
+                            type="number"
+                            className={classes.textfield}
+                            value={values.discount}
+                            onChange={event =>
+                                this.handleFieldChange("discount", event.target.value)
+                            }
+                          />
+                        </Paper>
+                        {showDiscountError && (
+                            <Typography className={classes.fieldError} variant="body2">
+                              {errors.discount[0]}
+                            </Typography>
+                        )}
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Paper
+                          component="form"
+                          className={classes.paper}
+                          variant="outlined"
+                        >
+                          <Typography className={classes.typo}>
+                            Numbers
+                          </Typography>
+                          <InputBase
+                            type="number"
+                            className={classes.textfield}
+                            value={values.num_of_voucher}
+                            onChange={event =>
+                                this.handleFieldChange("num_of_voucher", event.target.value)
+                            }
+                          />
+                        </Paper>
+                        {showNumbersError && (
+                            <Typography className={classes.fieldError} variant="body2">
+                              {errors.num_of_voucher[0]}
+                            </Typography>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item>
+                    <Paper
+                      component="form"
+                      className={classes.paper}
+                      variant="outlined"
+                    >
+                      <Typography className={classes.typo}>Describe</Typography>
+                      <InputBase
+                        placeholder="Describe something about your campaign"
+                        multiline={true}
+                        className={classes.textfield}
+                        value={values.description}
+                        onChange={event =>
+                            this.handleFieldChange("description", event.target.value)
+                        }
+                      />
+                    </Paper>
+                    {showDescribeError && (
+                        <Typography className={classes.fieldError} variant="body2">
+                          {errors.description[0]}
+                        </Typography>
+                    )}
+                  </Grid>
+                </Grid>
+              </DialogContent>
+              <DialogActions>
                 <Button
                   autoFocus
-                  onClick={this.createCampaign}
+                  onClick={this.showPart1}
                   className={classes.button}
                 >
-                  Create campaign
+                  Back
                 </Button>
-              )
-            ) : null}
-          </DialogActions>
+
+                <Button
+                  autoFocus
+                  disabled={!isValid}
+                  onClick={this.showPart3}
+                  className={classes.button}
+                >
+                  Next
+                </Button>
+              </DialogActions>
+            </>
+          ) : (
+            part3 && (
+              <>
+                <DialogContent className={classes.dialog}>
+                  <Grid
+                    container
+                    direction="column"
+                    spacing={2}
+                    alignContent="center"
+                  >
+                    <Grid item>
+                      <Typography className={classes.titlePart}>Choose games</Typography>
+                    </Grid>
+                    <Grid item>
+                      <Grid
+                        container
+                        direction="row"
+                        justify="space-around"
+                        alignItems="flex-start"
+                        style={{minWidth: 500}}
+                      >
+                        {gamesChoose.map((game, index) => {
+                          return (
+                            <Card
+                              key={index}
+                              variant="outlined"
+                              className={classes.cardGame}
+                            >
+                              <Grid
+                                container
+                                direction="column"
+                                justify="space-around"
+                                alignItems="center"
+                              >
+                                <Grid item>
+                                  <Typography
+                                    variant="h6"
+                                    className={classes.gameTitle}
+                                  >
+                                    {game.name}
+                                  </Typography>
+                                </Grid>
+
+                                <Grid item>
+                                  <div className={classes.logoWrapper}>
+                                    <img
+                                      alt="icon game"
+                                      src={game.logo}
+                                      className={classes.logo}
+                                    />
+                                  </div>
+                                </Grid>
+                                <Grid item>
+                                  <GreenCheckbox
+                                    onChange={this.handleGameChoose}
+                                    name={game.id.toString()}
+                                  />
+                                </Grid>
+                                {game.isCheck && (
+                                  <Grid item>
+                                    <Paper
+                                      component="form"
+                                      className={classes.paper}
+                                      variant="outlined"
+                                    >
+                                      <InputBase
+                                        className={classes.textfield}
+                                        type="number"
+                                        value={game.acceptPoint}
+                                        placeholder="Minimum point"
+                                        onChange={event =>
+                                          this.handleChangeGamePoint(
+                                            event,
+                                            game.id
+                                          )
+                                        }
+                                      />
+                                      <Typography className={classes.point}>/{game.point} points</Typography>
+                                    </Paper>
+                                  </Grid>
+                                )}
+                              </Grid>
+                            </Card>
+                          );
+                        })}
+                      </Grid>
+                    </Grid>
+                    <Grid item >
+                      {messageError && (
+                        <Typography className={classes.fieldError}>
+                          {messageError}
+                        </Typography>
+                      )}
+                    </Grid>
+                    {isUploadImg && (
+                      <Grid item>
+                        <Typography className={classes.fieldError}>
+                          {isUploadImg}
+                        </Typography>
+                      </Grid>
+                    )}
+                    {isLoading && !messageError && (
+                      <div className={classes.progressWrapper}>
+                        <CircularProgress />
+                      </div>
+                    )}
+                  </Grid>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                      autoFocus
+                      onClick={this.showPart2}
+                      className={classes.button}
+                  >
+                    Back
+                  </Button>
+                  {!isSuccessful ? (
+                    messageError ? (
+                      <Button
+                        autoFocus
+                        onClick={this.handleCreateCampaignFail}
+                        className={classes.button}
+                      >
+                        Try it again
+                      </Button>
+                    ) : (
+                      <Button
+                        autoFocus
+                        onClick={this.createCampaign}
+                        className={classes.button}
+                      >
+                        Create campaign
+                      </Button>
+                    )
+                  ) : null}
+                </DialogActions>
+              </>
+            )
+          )}
         </Dialog>
       </DashboardLayout>
     );
@@ -686,7 +1040,8 @@ const mapStateToProps = state => {
     isSuccessful: state.Campaigns.isSuccessful,
     messageError: state.Campaigns.messageError,
     myCampaigns: state.Campaigns.myCampaigns,
-    myVouchers: state.Vouchers.myVouchers
+    myVouchers: state.Vouchers.myVouchers,
+    games: state.Games.games
   };
 };
 

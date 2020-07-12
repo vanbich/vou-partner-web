@@ -53,7 +53,7 @@ const DialogTitle = withStyles(style)(props => {
             disableTypography
             className={classes.root}
             {...other}
-            style={{ borderBottom: "2px dashed #62cdd9" }}
+            style={{ borderBottom: "1px dashed #ffa4a8" }}
         >
             <Typography variant="h6">{children}</Typography>
             {onClose ? (
@@ -72,7 +72,7 @@ const DialogTitle = withStyles(style)(props => {
 const DialogContent = withStyles(theme => ({
     root: {
         padding: theme.spacing(2),
-        borderBottom: "2px dashed #62cdd9"
+        borderBottom: "1px dashed #ffa4a8"
     }
 }))(MuiDialogContent);
 
@@ -89,6 +89,7 @@ class CampaignCard extends Component {
         this.state = {
             openCampaign: false,
             openVoucher: false,
+            openGame: false,
             valuesCampaign: {
                 name: "",
                 image: "",
@@ -97,7 +98,8 @@ class CampaignCard extends Component {
                 end_time: new Date(),
                 description: "",
                 count: 0,
-                discount: 0
+                discount: 0,
+                games: []
             },
         };
         this.wrapper = React.createRef();
@@ -117,10 +119,22 @@ class CampaignCard extends Component {
                 end_time: new Date(product.end_time),
                 description: product.description,
                 count: product.num_of_voucher,
-                discount: product.discount
+                discount: product.discount,
+                games: [...product.games]
             }
         });
     }
+    closeInfoGame = () => {
+        this.setState({
+            openGame: false
+        });
+    };
+
+    openInfoGame = () => {
+        this.setState({
+            openGame: true
+        });
+    };
 
     closeInfoVoucher = () => {
         this.setState({
@@ -222,81 +236,54 @@ class CampaignCard extends Component {
         return (
             <div className={classes.root} ref={this.wrapper}>
                 <Card className={classes.coupon}>
-                    {product.image ? (
-                        <Grid
-                            container
-                            direction="row"
-                            justify="center"
-                            alignContent="center"
-                        >
-                            <Grid item xs={4}>
+                    <Grid
+                        container
+                        direction="row"
+                        justify="center"
+                        alignContent="center"
+                    >
+                        <Grid item xs={4}>
+                            <Grid
+                                container
+                                direction="column"
+                                alignItems="center"
+                                justify="space-around"
+                                style={{ height: "150px" }}
+                            >
+                                <Typography className={classes.campaignName} variant="h6">
+                                    {product.name}
+                                </Typography>
                                 <Grid
                                     container
-                                    direction="column"
+                                    direction="row"
                                     alignItems="center"
-                                    justify="space-around"
-                                    style={{ height: "150px" }}
+                                    justify="center"
                                 >
-                                    <Typography className={classes.campaignName} variant="h6">
-                                        {product.name}
-                                    </Typography>
-                                    <Grid
-                                        container
-                                        direction="row"
-                                        alignItems="center"
-                                        justify="center"
+                                    <IconButton
+                                        className={classes.icon}
+                                        onClick={this.openInfoVoucher}
                                     >
-                                        <IconButton
-                                            className={classes.icon}
-                                            onClick={this.openInfoVoucher}
-                                        >
-                                            <ConfirmationNumberIcon />
-                                        </IconButton>
-                                        <IconButton className={classes.icon}>
-                                            <SportsEsportsIcon />
-                                        </IconButton>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid item xs={8}>
-                                <div
-                                    className={classes.imageWrapper}
-                                    onClick={this.handleClickOpen}
-                                >
-                                    <img
-                                        src={product.image}
-                                        alt={product.name}
-                                        className={classes.image}
-                                    />
-                                </div>
-                            </Grid>
-                        </Grid>
-                    ) : (
-                        <Grid container direction="row" alignContent="center">
-                            <Grid item xs={4}>
-                                <div
-                                    className={classes.imageWrapper}
-                                    onClick={this.handleClickOpen}
-                                >
-                                    <img
-                                        alt="Product"
-                                        className={classes.image}
-                                        src={product.avatar}
-                                    />
-                                </div>
-                            </Grid>
-                            <Grid item xs={8} style={{ backgroundColor: "#62cdd9" }}>
-                                <Grid container direction="column">
-                                    <Typography className={classes.content} variant="h4">
-                                        {product.name}
-                                    </Typography>
-                                    <Typography className={classes.content} variant="h4">
-                                        {product.start_time} - {product.end_time}
-                                    </Typography>
+                                        <ConfirmationNumberIcon />
+                                    </IconButton>
+                                    <IconButton className={classes.icon} onClick={this.openInfoGame}>
+                                        <SportsEsportsIcon />
+                                    </IconButton>
                                 </Grid>
                             </Grid>
                         </Grid>
-                    )}
+                        <Grid item xs={8}>
+                            <div
+                                className={classes.imageWrapper}
+                                onClick={this.handleClickOpen}
+                            >
+                                <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className={classes.image}
+                                />
+                            </div>
+                        </Grid>
+                    </Grid>
                 </Card>
                 <Dialog
                     fullWidth
@@ -627,6 +614,105 @@ class CampaignCard extends Component {
                             <Button
                                 autoFocus
                                 onClick={this.closeInfoVoucher}
+                                className={classes.button}
+                            >
+                                OK
+                            </Button>
+                        </DialogActions>
+                    </div>
+                </Dialog>
+                <Dialog
+                    fullWidth
+                    maxWidth="sm"
+                    onClose={this.closeInfoGame}
+                    aria-labelledby="customized-dialog-title"
+                    open={this.state.openGame}
+                >
+                    <DialogTitle
+                        id="customized-dialog-title"
+                        onClose={this.closeInfoGame}
+                    >
+                        {valuesCampaign.promo_code}
+                    </DialogTitle>
+                    <div>
+                        <DialogContent>
+                            <Grid
+                                container
+                                direction="column"
+                                spacing={2}
+                                alignContent="center"
+                            >
+                                <Grid item>
+                                    <Typography className={classes.titlePart}>Choose games</Typography>
+                                </Grid>
+                                <Grid item>
+                                    <Grid
+                                        container
+                                        direction="row"
+                                        justify="space-around"
+                                        alignItems="flex-start"
+                                        style={{minWidth: 500}}
+                                    >
+                                        {valuesCampaign.games.map((game, index) => {
+                                            return (
+                                                <Card
+                                                    key={index}
+                                                    variant="outlined"
+                                                    className={classes.cardGame}
+                                                >
+                                                    <Grid
+                                                        container
+                                                        direction="column"
+                                                        justify="space-around"
+                                                        alignItems="center"
+                                                        spacing={2}
+                                                    >
+                                                        <Grid item>
+                                                            <Typography
+                                                                variant="h6"
+                                                                className={classes.gameTitle}
+                                                            >
+                                                                {game.name}
+                                                            </Typography>
+                                                        </Grid>
+
+                                                        <Grid item>
+                                                            <div className={classes.logoWrapper}>
+                                                                <img
+                                                                    alt="icon game"
+                                                                    src={game.logo}
+                                                                    className={classes.logo}
+                                                                />
+                                                            </div>
+                                                        </Grid>
+
+                                                        <Grid item>
+                                                            <Paper
+                                                                component="form"
+                                                                className={classes.paper}
+                                                                variant="outlined"
+                                                            >
+                                                                <InputBase
+                                                                    className={classes.textfield}
+                                                                    type="number"
+                                                                    value={game.accept_point}
+                                                                    placeholder="Minimum point"
+                                                                />
+                                                                <Typography className={classes.point}>/{game.point} points</Typography>
+                                                            </Paper>
+                                                        </Grid>
+                                                    </Grid>
+                                                </Card>
+                                            );
+                                        })}
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button
+                                autoFocus
+                                onClick={this.closeInfoGame}
                                 className={classes.button}
                             >
                                 OK

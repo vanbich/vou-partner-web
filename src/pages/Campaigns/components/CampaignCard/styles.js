@@ -84,7 +84,7 @@ export default theme => ({
         padding: "10px",
     },
     button: {
-        color: "#62cdd9"
+        color: "#ffa4a8"
     },
     input: {
         display: "none"
@@ -111,10 +111,10 @@ export default theme => ({
         textAlign: 'center'
     },
     upload:{
-        color: "#62cdd9",
+        color: "#ffa4a8",
     },
     icon:{
-        color: "#62cdd9",
+        color: "#ffa4a8",
     },
     imageWrapperQR: {
         height: 150,
@@ -149,5 +149,33 @@ export default theme => ({
         marginLeft: theme.spacing(1),
         flex: 1,
         fontSize: 12,
+    },
+    cardGame:{
+        width: '30%',
+        padding: theme.spacing(1)
+    },
+    gameTitle:{
+        fontSize: 11,
+        textTransform: "uppercase",
+        textAlign: "center"
+    },
+    point: {
+        padding: 10,
+        fontSize: 11,
+        backgroundColor: "#ebebeb",
+        textTransform: "uppercase",
+        textAlign: "center",
+    },
+    logoWrapper: {
+        height: 50,
+        width: 50,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        objectFit: "scale-down"
+    },
+    logo: {
+        maxWidth: "100%",
+        maxHeight: "100%",
     },
 });
