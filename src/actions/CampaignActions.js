@@ -55,7 +55,7 @@ const doCreateCampaign = (
     return res;
 };
 
-export const createCampaignActionSuccess = res => {
+const createCampaignActionSuccess = res => {
     return {
         type: userConstants.CREATE_CAMPAIGN_SUCCESS,
         payload: {
@@ -64,7 +64,7 @@ export const createCampaignActionSuccess = res => {
     };
 };
 
-export const createCampaignActionFailure = err => {
+const createCampaignActionFailure = err => {
     return {
         type: userConstants.CREATE_CAMPAIGN_FAILURE,
         payload: {
@@ -73,7 +73,7 @@ export const createCampaignActionFailure = err => {
     };
 };
 
-export const createCampaignActionRequest = () => {
+const createCampaignActionRequest = () => {
     return {
         type: userConstants.CREATE_CAMPAIGN_REQUEST,
         payload: {}
@@ -132,7 +132,7 @@ const doGetAllCampaigns = async (token, id) => {
     return res;
 };
 
-export const getAllCampaignsActionSuccess = res => {
+const getAllCampaignsActionSuccess = res => {
     return {
         type: userConstants.GET_MY_CAMPAIGN_SUCCESS,
         payload: {
@@ -141,7 +141,7 @@ export const getAllCampaignsActionSuccess = res => {
     };
 };
 
-export const getAllCampaignsActionFailure = err => {
+const getAllCampaignsActionFailure = err => {
     return {
         type: userConstants.GET_MY_CAMPAIGN_FAILURE,
         payload: {
@@ -150,7 +150,7 @@ export const getAllCampaignsActionFailure = err => {
     };
 };
 
-export const getAllCampaignsActionRequest = () => {
+const getAllCampaignsActionRequest = () => {
     return {
         type: userConstants.GET_MY_CAMPAIGN_REQUEST,
         payload: {}
@@ -166,6 +166,57 @@ export const getAllCampaignsRequest = (token, id) => {
                 dispatch(getAllCampaignsActionSuccess(res));
             } else {
                 dispatch(getAllCampaignsActionFailure(res));
+            }
+        });
+    };
+};
+
+const doDeleteCampaign = (token, id) => {
+    return axios({
+        method: "DELETE",
+        url: `https://vouapp-api.herokuapp.com/campaign/${id}`,
+        headers: {
+            token: `JWT ${token}`
+        }
+    }).catch(err => {
+        return err;
+    });
+};
+
+const deleteCampaignActionSuccess = res => {
+    return {
+        type: userConstants.DELETE_CAMPAIGN_SUCCESS,
+        payload: {
+            res
+        }
+    };
+};
+
+const deleteCampaignActionFailure = err => {
+    return {
+        type: userConstants.DELETE_CAMPAIGN_FAILURE,
+        payload: {
+            err
+        }
+    };
+};
+
+const deleteCampaignActionRequest = () => {
+    return {
+        type: userConstants.DELETE_CAMPAIGN_SUCCESS,
+        payload: {}
+    };
+};
+
+export const deleteCampaignRequest = (token, id) => {
+    return dispatch => {
+        dispatch(deleteCampaignActionRequest());
+        return doDeleteCampaign(token, id).then(res => {
+            if (res.data) {
+                console.log("delete campaign", res);
+                dispatch(deleteCampaignActionSuccess(res));
+            } else {
+                dispatch(deleteCampaignActionFailure(res));
             }
         });
     };

@@ -118,12 +118,12 @@ class Campaign extends Component {
     super(props);
     this.wrapper = React.createRef();
     this.state = {
-      values:{
+      values: {
         name: "",
         promo_code: "",
         description: "",
         num_of_voucher: 0,
-        discount: 0,
+        discount: 0
       },
 
       touched: {
@@ -131,7 +131,7 @@ class Campaign extends Component {
         promo_code: false,
         description: false,
         num_of_voucher: false,
-        discount: false,
+        discount: false
       },
       errors: {
         name: null,
@@ -139,6 +139,7 @@ class Campaign extends Component {
         description: null,
         num_of_voucher: null,
         discount: null,
+        end_time: null
       },
 
       limit: 6,
@@ -182,7 +183,7 @@ class Campaign extends Component {
               point: 20,
               logo: "/images/products/product_1.png",
               description:
-                  "Tâng bóng và giữ khi bóng rơi xuống liên tục nếu không giữ được sẽ kết thúc màn chơi"
+                "Tâng bóng và giữ khi bóng rơi xuống liên tục nếu không giữ được sẽ kết thúc màn chơi"
             },
             {
               id: 2,
@@ -191,9 +192,9 @@ class Campaign extends Component {
               point: 6,
               logo: "/images/products/product_2.png",
               description:
-                  "Tìm những cặp ảnh giống nhau với số lượt mở ảnh cho trước nếu hết lượt mở ảnh mà chưa mở hết thì thua"
-            },
-          ]
+                "Tìm những cặp ảnh giống nhau với số lượt mở ảnh cho trước nếu hết lượt mở ảnh mà chưa mở hết thì thua"
+            }
+          ];
         } else {
           data[i].voucher = null;
         }
@@ -212,7 +213,7 @@ class Campaign extends Component {
     this.generateGames();
   }
 
-  generateGames = () =>{
+  generateGames = () => {
     const { games } = this.props;
     let { gamesChoose } = this.state;
     gamesChoose = [];
@@ -280,7 +281,6 @@ class Campaign extends Component {
     });
   };
 
-
   validateForm = _.debounce(() => {
     const { values } = this.state;
 
@@ -303,24 +303,6 @@ class Campaign extends Component {
   };
 
 
-  handleChangeDescript = e => {
-    this.setState({
-      description: e.target.value
-    });
-  };
-
-  handleChangeCampaignName = e => {
-    this.setState({
-      name: e.target.value
-    });
-  };
-
-  handleChangeCode = e => {
-    this.setState({
-      promo_code: e.target.value
-    });
-  };
-
   setNewCampaignStartTime = date => {
     this.setState({
       start_time: date._d
@@ -328,22 +310,33 @@ class Campaign extends Component {
   };
 
   setNewCampaignEndTime = date => {
-    this.setState({
-      end_time: date._d
-    });
+    const { start_time, errors } = this.state;
+    const date_picked = date._d;
+
+    if (date_picked.valueOf() <= start_time.valueOf()) {
+      errors.end_time = "End time must be after start time";
+      this.setState({
+        end_time: new Date(),
+        errors: { ...errors },
+        isValid: false,
+      });
+    } else if (date_picked.valueOf() < new Date().valueOf()) {
+      errors.end_time = "End time is today at least";
+      this.setState({
+        end_time: new Date(),
+        errors: { ...errors },
+        isValid: false,
+      });
+    } else {
+      errors.end_time = null;
+      this.setState({
+        end_time: date._d,
+        errors: { ...errors },
+        isValid: true,
+      });
+    }
   };
 
-  handleChangeDiscount = e => {
-    this.setState({
-      discount: e.target.value
-    });
-  };
-
-  handleChangeNumbers = e => {
-    this.setState({
-      num_of_voucher: e.target.value
-    });
-  };
 
   handleGameChoose = e => {
     const { gamesChoose } = this.state;
@@ -457,21 +450,21 @@ class Campaign extends Component {
     this.props.clear();
     this.generateGames();
     this.setState({
-      values:{
+      values: {
         name: "",
         promo_code: "",
         description: "",
         num_of_voucher: 0,
-        discount: 0,
+        discount: 0
       },
       imageCampaign:
         "https://cache.redgiant.com/wp-assets/2019/07/Summer19-Sale-Teaser-Blog.jpg",
       start_time: new Date(),
       end_time: new Date(),
-      imagePreview: '',
+      imagePreview: "",
       part1: true,
       part2: false,
-      part3: false,
+      part3: false
     });
   };
 
@@ -493,7 +486,10 @@ class Campaign extends Component {
           return (
             <Grid item key={product.id} lg={4} md={4} xs={12}>
               <Link to="#">
-                <CampaignCard product={product} voucher={product.voucher} />
+                <CampaignCard
+                  product={product}
+                  data={() => this.getCampaigns()}
+                />
               </Link>
             </Grid>
           );
@@ -530,7 +526,7 @@ class Campaign extends Component {
     const showDiscountError = touched.discount && errors.discount;
     const showNumbersError = touched.num_of_voucher && errors.num_of_voucher;
     const showDescribeError = touched.description && errors.description;
-
+    const showEndtimeError = errors.end_time;
 
     return (
       <DashboardLayout title="Campaign">
@@ -590,10 +586,10 @@ class Campaign extends Component {
           {isSuccessful ? (
             <Grid
               container
-              direction="column"
+              direction="row"
               justify="center"
               alignItems="center"
-              style={{minWidth: 500}}
+              style={{ minWidth: 500, minHeight: 200 }}
             >
               <CheckCircleIcon className={classes.icon} />
               <Typography className={classes.successContent} variant="h4">
@@ -609,10 +605,12 @@ class Campaign extends Component {
                   spacing={2}
                   justify="center"
                   alignItems="center"
-                  style={{minWidth: 500}}
+                  style={{ minWidth: 500 }}
                 >
                   <Grid item>
-                    <Typography className={classes.titlePart}>Choose image campaign</Typography>
+                    <Typography className={classes.titlePart}>
+                      Choose image campaign
+                    </Typography>
                   </Grid>
                   <Grid item>
                     <div className={classes.displayImage}>
@@ -652,7 +650,7 @@ class Campaign extends Component {
               <DialogActions>
                 <Button
                   autoFocus
-                  disabled={imagePreview === ''}
+                  disabled={imagePreview === ""}
                   onClick={this.showPart2}
                   className={classes.button}
                 >
@@ -668,10 +666,12 @@ class Campaign extends Component {
                   direction="column"
                   spacing={2}
                   alignContent="center"
-                  style={{minWidth: 500}}
+                  style={{ minWidth: 500 }}
                 >
                   <Grid item>
-                    <Typography className={classes.titlePart}>Campaign detail</Typography>
+                    <Typography className={classes.titlePart}>
+                      Campaign detail
+                    </Typography>
                   </Grid>
                   <Grid item>
                     <Grid
@@ -693,14 +693,17 @@ class Campaign extends Component {
                             value={values.name}
                             placeholder="Your campaign name"
                             onChange={event =>
-                                this.handleFieldChange("name", event.target.value)
+                              this.handleFieldChange("name", event.target.value)
                             }
                           />
                         </Paper>
                         {showNameError && (
-                            <Typography className={classes.fieldError} variant="body2">
-                              {errors.name[0]}
-                            </Typography>
+                          <Typography
+                            className={classes.fieldError}
+                            variant="body2"
+                          >
+                            {errors.name[0]}
+                          </Typography>
                         )}
                       </Grid>
                       <Grid item xs={6}>
@@ -715,14 +718,20 @@ class Campaign extends Component {
                             className={classes.textfield}
                             value={values.promo_code}
                             onChange={event =>
-                                this.handleFieldChange("promo_code", event.target.value)
+                              this.handleFieldChange(
+                                "promo_code",
+                                event.target.value
+                              )
                             }
                           />
                         </Paper>
                         {showPromoCodeError && (
-                            <Typography className={classes.fieldError} variant="body2">
-                              {errors.promo_code[0]}
-                            </Typography>
+                          <Typography
+                            className={classes.fieldError}
+                            variant="body2"
+                          >
+                            {errors.promo_code[0]}
+                          </Typography>
                         )}
                       </Grid>
                     </Grid>
@@ -731,55 +740,63 @@ class Campaign extends Component {
                     <Grid container direction="row" spacing={3}>
                       <Grid item xs={6}>
                         <Paper
-                            component="form"
-                            className={classes.paper}
-                            variant="outlined"
+                          component="form"
+                          className={classes.paper}
+                          variant="outlined"
                         >
                           <Typography className={classes.typo}>
                             Begin
                           </Typography>
                           <MuiPickersUtilsProvider
-                              utils={MomentUtils}
-                              fullWidth
+                            utils={MomentUtils}
+                            fullWidth
                           >
                             <DatePicker
-                                width="100%"
-                                disableToolbar
-                                format="DD/MM/YYYY"
-                                value={start_time}
-                                InputProps={{
-                                  disableUnderline: true
-                                }}
-                                onChange={this.setNewCampaignStartTime}
-                                className={classes.textfield}
+                              width="100%"
+                              disableToolbar
+                              format="DD/MM/YYYY"
+                              value={start_time}
+                              InputProps={{
+                                disableUnderline: true
+                              }}
+                              onChange={this.setNewCampaignStartTime}
+                              className={classes.textfield}
                             />
                           </MuiPickersUtilsProvider>
                         </Paper>
                       </Grid>
                       <Grid item xs={6}>
                         <Paper
-                            component="form"
-                            className={classes.paper}
-                            variant="outlined"
+                          component="form"
+                          className={classes.paper}
+                          variant="outlined"
                         >
                           <Typography className={classes.typo}>End</Typography>
                           <MuiPickersUtilsProvider
-                              utils={MomentUtils}
-                              fullWidth
+                            utils={MomentUtils}
+                            fullWidth
                           >
                             <DatePicker
-                                width="100%"
-                                disableToolbar
-                                format="DD/MM/YYYY"
-                                InputProps={{
-                                  disableUnderline: true
-                                }}
-                                value={end_time}
-                                onChange={this.setNewCampaignEndTime}
-                                className={classes.textfield}
+                              width="100%"
+                              disableToolbar
+                              format="DD/MM/YYYY"
+                              InputProps={{
+                                disableUnderline: true
+                              }}
+                              value={end_time}
+                              onChange={this.setNewCampaignEndTime}
+                              className={classes.textfield}
                             />
                           </MuiPickersUtilsProvider>
                         </Paper>
+                        {showEndtimeError && (
+                          <Typography
+                            className={classes.fieldError}
+                            variant="body2"
+                          >
+                            {errors.end_time}
+                          </Typography>
+                        )}
                       </Grid>
                     </Grid>
                   </Grid>
@@ -805,14 +822,20 @@ class Campaign extends Component {
                             className={classes.textfield}
                             value={values.discount}
                             onChange={event =>
-                                this.handleFieldChange("discount", event.target.value)
+                              this.handleFieldChange(
+                                "discount",
+                                event.target.value
+                              )
                             }
                           />
                         </Paper>
                         {showDiscountError && (
-                            <Typography className={classes.fieldError} variant="body2">
-                              {errors.discount[0]}
-                            </Typography>
+                          <Typography
+                            className={classes.fieldError}
+                            variant="body2"
+                          >
+                            {errors.discount[0]}
+                          </Typography>
                         )}
                       </Grid>
                       <Grid item xs={6}>
@@ -829,14 +852,20 @@ class Campaign extends Component {
                             className={classes.textfield}
                             value={values.num_of_voucher}
                             onChange={event =>
-                                this.handleFieldChange("num_of_voucher", event.target.value)
+                              this.handleFieldChange(
+                                "num_of_voucher",
+                                event.target.value
+                              )
                             }
                           />
                         </Paper>
                         {showNumbersError && (
-                            <Typography className={classes.fieldError} variant="body2">
-                              {errors.num_of_voucher[0]}
-                            </Typography>
+                          <Typography
+                            className={classes.fieldError}
+                            variant="body2"
+                          >
+                            {errors.num_of_voucher[0]}
+                          </Typography>
                         )}
                       </Grid>
                     </Grid>
@@ -854,14 +883,20 @@ class Campaign extends Component {
                         className={classes.textfield}
                         value={values.description}
                         onChange={event =>
-                            this.handleFieldChange("description", event.target.value)
+                          this.handleFieldChange(
+                            "description",
+                            event.target.value
+                          )
                         }
                       />
                     </Paper>
                     {showDescribeError && (
-                        <Typography className={classes.fieldError} variant="body2">
-                          {errors.description[0]}
-                        </Typography>
+                      <Typography
+                        className={classes.fieldError}
+                        variant="body2"
+                      >
+                        {errors.description[0]}
+                      </Typography>
                     )}
                   </Grid>
                 </Grid>
@@ -896,7 +931,9 @@ class Campaign extends Component {
                     alignContent="center"
                   >
                     <Grid item>
-                      <Typography className={classes.titlePart}>Choose games</Typography>
+                      <Typography className={classes.titlePart}>
+                        Choose games
+                      </Typography>
                     </Grid>
                     <Grid item>
                       <Grid
@@ -904,7 +941,7 @@ class Campaign extends Component {
                         direction="row"
                         justify="space-around"
                         alignItems="flex-start"
-                        style={{minWidth: 500}}
+                        style={{ minWidth: 500 }}
                       >
                         {gamesChoose.map((game, index) => {
                           return (
@@ -962,7 +999,9 @@ class Campaign extends Component {
                                           )
                                         }
                                       />
-                                      <Typography className={classes.point}>/{game.point} points</Typography>
+                                      <Typography className={classes.point}>
+                                        /{game.point} points
+                                      </Typography>
                                     </Paper>
                                   </Grid>
                                 )}
@@ -972,7 +1011,7 @@ class Campaign extends Component {
                         })}
                       </Grid>
                     </Grid>
-                    <Grid item >
+                    <Grid item>
                       {messageError && (
                         <Typography className={classes.fieldError}>
                           {messageError}
@@ -995,9 +1034,9 @@ class Campaign extends Component {
                 </DialogContent>
                 <DialogActions>
                   <Button
-                      autoFocus
-                      onClick={this.showPart2}
-                      className={classes.button}
+                    autoFocus
+                    onClick={this.showPart2}
+                    className={classes.button}
                   >
                     Back
                   </Button>

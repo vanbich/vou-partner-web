@@ -4,7 +4,8 @@ const initState = {
   myCampaigns: [],
   isSuccessful: false,
   messageError: "",
-  isLoading: false
+  isLoading: false,
+  isDeleted: false,
 };
 
 const Campaigns = (state = initState, action) => {
@@ -12,6 +13,8 @@ const Campaigns = (state = initState, action) => {
     case userConstants.GET_MY_CAMPAIGN_SUCCESS: {
       state.myCampaigns = [...action.payload.res.data];
       state.isLoading = false;
+      state.isSuccessful = false;
+      state.isDeleted = false;
       return { ...state};
     }
     case userConstants.GET_MY_CAMPAIGN_REQUEST: {
@@ -29,11 +32,9 @@ const Campaigns = (state = initState, action) => {
       return { ...state };
     }
     case userConstants.CREATE_CAMPAIGN_SUCCESS: {
-      if (action.payload.res.data) {
-        state.isSuccessful = true;
-        state.isLoading = false;
-        state.messageError = "";
-      }
+      state.isSuccessful = true;
+      state.isLoading = false;
+      state.messageError = "";
       return { ...state };
     }
     case userConstants.CREATE_CAMPAIGN_REQUEST: {
@@ -56,9 +57,29 @@ const Campaigns = (state = initState, action) => {
       }
       return { ...state };
     }
+    case userConstants.DELETE_CAMPAIGN_REQUEST:{
+      state.isLoading = true;
+      state.isDeleted = false;
+      state.messageError = "";
+      return {...state}
+    }
+    case userConstants.DELETE_CAMPAIGN_FAILURE:{
+      state.isLoading = false;
+      state.isDeleted = false;
+      state.messageError = action.payload.err.message;
+      return {...state}
+    }
+    case userConstants.DELETE_CAMPAIGN_SUCCESS:{
+      state.isLoading = false;
+      state.isDeleted = true;
+      state.messageError = null;
+      return {...state}
+    }
     case userConstants.REFRESH_STATE_CAMPAIGN: {
+      state.isLoading = false;
       state.isSuccessful = false;
       state.messageError = null;
+      state.isDeleted = false;
       return { ...state };
     }
     default:

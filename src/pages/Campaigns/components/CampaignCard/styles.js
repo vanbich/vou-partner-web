@@ -178,4 +178,21 @@ export default theme => ({
         maxWidth: "100%",
         maxHeight: "100%",
     },
+    deleted:{
+        color: "red",
+        marginLeft: theme.spacing(2)
+    },
+    iconDeleted:{
+        color: "red",
+        width: 50,
+        height: 50
+    },
+    titlePart: {
+        fontSize: 14,
+        color: "#000",
+        textTransform: "uppercase",
+        textAlign: "center",
+        fontWeight: 'bold',
+        marginBottom: theme.spacing(1)
+    },
 });
