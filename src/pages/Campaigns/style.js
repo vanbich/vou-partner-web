@@ -91,7 +91,7 @@ export default theme => ({
     margin: "0 auto",
     justifyContent: "center",
     padding: theme.spacing(2),
-    border: "2px dashed #ffa4a8",
+    border: "1px dashed #ffa4a8",
     borderRadius: "2%",
     objectFit: "scale-down"
   },

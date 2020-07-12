@@ -1,5 +1,4 @@
 import userConstants from "../constants";
-import { forEach } from "underscore";
 
 const initState = {
   myCampaigns: [],

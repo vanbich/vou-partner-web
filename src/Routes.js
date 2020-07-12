@@ -8,6 +8,7 @@ import SignIn from "./pages/SignIn";
 import NotFound from "./pages/NotFound";
 import Campaign from "./pages/Campaigns";
 import Account from "./pages/Account";
+import EmployeeList from "./pages/Employees"
 
 // Service method
 import { connect } from "react-redux";
@@ -38,6 +39,7 @@ class Routes extends Component {
 
           <Route component={Dashboard} exact path="/dashboard" />
           <Route component={Campaign} exact path="/campaigns" />
+          <Route component={EmployeeList} exact path="/employees" />
           <Route component={Account} exact path="/account" />
 
           <Route component={NotFound} exact path="/not-found" />

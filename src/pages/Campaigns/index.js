@@ -37,6 +37,7 @@ import {
 } from "@material-ui/icons";
 import CloseIcon from "@material-ui/icons/Close";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+
 // Shared layouts
 import { Dashboard as DashboardLayout } from "../../layouts";
 
@@ -282,7 +283,6 @@ class Campaign extends Component {
     this.setState(newState, this.validateForm);
   };
 
-
   setNewCampaignStartTime = date => {
     this.setState({
       start_time: date._d
@@ -298,25 +298,24 @@ class Campaign extends Component {
       this.setState({
         end_time: new Date(),
         errors: { ...errors },
-        isValid: false,
+        isValid: false
       });
     } else if (date_picked.valueOf() < new Date().valueOf()) {
       errors.end_time = "End time is today at least";
       this.setState({
         end_time: new Date(),
         errors: { ...errors },
-        isValid: false,
+        isValid: false
       });
     } else {
       errors.end_time = null;
       this.setState({
         end_time: date._d,
         errors: { ...errors },
-        isValid: true,
+        isValid: true
       });
     }
   };
-
 
   handleGameChoose = e => {
     const { gamesChoose } = this.state;
@@ -352,14 +351,10 @@ class Campaign extends Component {
 
   createCampaign = () => {
     const {
-      name,
+      values,
       imageCampaign,
-      promo_code,
-      description,
       start_time,
       end_time,
-      discount,
-      num_of_voucher,
       gamesChoose
     } = this.state;
     const { id } = this.props;
@@ -394,14 +389,14 @@ class Campaign extends Component {
             console.log("url", fireBaseUrl);
             console.log(
               "doCreateCampaign",
-              name,
+              values.name,
               fireBaseUrl,
               id,
-              discount,
-              num_of_voucher,
-              promo_code,
+              values.discount,
+              values.num_of_voucher,
+              values.promo_code,
               "url",
-              description,
+              values.description,
               this.dateToString(start_time),
               this.dateToString(end_time),
               campaignGames,
@@ -409,14 +404,14 @@ class Campaign extends Component {
             );
 
             this.props.doCreateCampaign(
-              name,
+              values.name,
               fireBaseUrl,
               id,
-              discount,
-              num_of_voucher,
-              promo_code,
+              values.discount,
+              values.num_of_voucher,
+              values.promo_code,
               "url",
-              description,
+              values.description,
               this.dateToString(start_time),
               this.dateToString(end_time),
               token

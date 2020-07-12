@@ -27,7 +27,7 @@ import {
 } from "@material-ui/icons";
 // import SportsEsportsIcon from "@material-ui/icons/SportsEsports";
 import ConfirmationNumberIcon from "@material-ui/icons/ConfirmationNumber";
-// import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
 
 // Component styles
 import styles from "./styles";
@@ -126,6 +126,21 @@ class Sidebar extends Component {
             <ListItemText
                 classes={{ primary: classes.listItemText }}
                 primary="Campaigns"
+            />
+          </ListItem>
+
+          <ListItem
+              activeClassName={classes.activeListItem}
+              className={classes.listItem}
+              component={NavLink}
+              to="/employees"
+          >
+            <ListItemIcon className={classes.listItemIcon}>
+              <GroupAddIcon />
+            </ListItemIcon>
+            <ListItemText
+                classes={{ primary: classes.listItemText }}
+                primary="Employees"
             />
           </ListItem>
 
