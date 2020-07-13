@@ -146,6 +146,71 @@ export const deleteEmployeeRequest = (token, id) => async dispatch => {
   }
 };
 
+function doUpdateEmployeePassword(
+  username,
+  new_password,
+  confirm_password,
+  token
+) {
+  return axios({
+    method: "PATCH",
+    url: "https://vouapp-api.herokuapp.com/partner/employee/change_password",
+    headers: {
+      token: `JWT ${token}`
+    },
+    data: {
+      username,
+      new_password,
+      confirm_password
+    }
+  });
+}
+
+const updateEmployeePasswordActionSuccess = res => {
+  return {
+    type: userConstants.UPDATE_EMPLOYEE_PASSWORD_SUCCESS,
+    payload: {
+      res
+    }
+  };
+};
+
+const updateEmployeePasswordActionFailure = err => {
+  return {
+    type: userConstants.UPDATE_EMPLOYEE_PASSWORD_FAILURE,
+    payload: {
+      err
+    }
+  };
+};
+
+const updateEmployeePasswordActionRequest = () => {
+  return {
+    type: userConstants.UPDATE_EMPLOYEE_PASSWORD_REQUEST,
+    payload: {}
+  };
+};
+
+export const updateEmployeePasswordRequest = (
+  username,
+  new_password,
+  confirm_password,
+  token
+) => async dispatch => {
+  dispatch(updateEmployeePasswordActionRequest());
+  try {
+    const res = await doUpdateEmployeePassword(
+      username,
+      new_password,
+      confirm_password,
+      token
+    );
+    dispatch(updateEmployeePasswordActionSuccess(res));
+  } catch (e) {
+    dispatch(updateEmployeePasswordActionFailure(e));
+  }
+};
+
 export const clear = () => {
   return {
     type: userConstants.REFRESH_STATE_EMPLOYEE

@@ -5,7 +5,9 @@ const initState = {
   isSuccessful: false,
   messageError: "",
   isLoading: false,
-  isDeleted: false,
+  isCreating: false,
+  isUpdating: false,
+  isDeleting: false,
   numbers: 0
 };
 
@@ -36,18 +38,18 @@ const Employees = (state = initState, action) => {
 
     case userConstants.CREATE_EMPLOYEE_SUCCESS: {
       state.isSuccessful = true;
-      state.isLoading = false;
+      state.isCreating = false;
       state.messageError = "";
       return { ...state };
     }
     case userConstants.CREATE_EMPLOYEE_REQUEST: {
       state.isSuccessful = false;
       state.messageError = "";
-      state.isLoading = true;
+      state.isCreating = true;
       return { ...state };
     }
     case userConstants.CREATE_EMPLOYEE_FAILURE: {
-      state.isLoading = false;
+      state.isCreating = false;
       state.isSuccessful = false;
       state.messageError = "";
       state.messageError = action.payload.err.message;
@@ -55,29 +57,48 @@ const Employees = (state = initState, action) => {
       return { ...state };
     }
 
+    case userConstants.UPDATE_EMPLOYEE_PASSWORD_REQUEST: {
+      state.isUpdating = true;
+      state.messageError = "";
+      return { ...state };
+    }
+    case userConstants.UPDATE_EMPLOYEE_PASSWORD_FAILURE: {
+      state.isUpdating = true;
+      state.messageError = action.payload.err.message;
+      return { ...state };
+    }
+    case userConstants.UPDATE_EMPLOYEE_PASSWORD_SUCCESS: {
+      state.isSuccessful = true;
+      state.messageError = null;
+      state.isUpdating = false;
+      return { ...state };
+    }
+
     case userConstants.DELETE_EMPLOYEE_REQUEST: {
-      state.isDeleted = true;
+      state.isDeleting = true;
       state.messageError = "";
       return { ...state };
     }
     case userConstants.DELETE_EMPLOYEE_FAILURE: {
-      state.isDeleted = true;
+      state.isDeleting = true;
       state.messageError = action.payload.err.message;
       state.numbers = 0;
       return { ...state };
     }
     case userConstants.DELETE_EMPLOYEE_SUCCESS: {
-      state.isDeleted = true;
+      state.isDeleting = true;
       state.messageError = null;
       state.numbers++;
       return { ...state };
     }
 
     case userConstants.REFRESH_STATE_EMPLOYEE: {
-      state.isLoading = false;
       state.isSuccessful = false;
-      state.messageError = null;
-      state.isDeleted = false;
+      state.messageError = "";
+      state.isLoading = false;
+      state.isCreating = false;
+      state.isUpdating = false;
+      state.isDeleting = false;
       state.numbers = 0;
       return { ...state };
     }

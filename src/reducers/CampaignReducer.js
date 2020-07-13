@@ -5,6 +5,7 @@ const initState = {
   isSuccessful: false,
   messageError: "",
   isLoading: false,
+  isCreating: false,
   isDeleted: false
 };
 
@@ -53,20 +54,21 @@ const Campaigns = (state = initState, action) => {
       state.myCampaigns = [];
       return { ...state };
     }
+
     case userConstants.CREATE_CAMPAIGN_SUCCESS: {
       state.isSuccessful = true;
-      state.isLoading = false;
+      state.isCreating = false;
       state.messageError = "";
       return { ...state };
     }
     case userConstants.CREATE_CAMPAIGN_REQUEST: {
       state.isSuccessful = false;
       state.messageError = "";
-      state.isLoading = true;
+      state.isCreating = true;
       return { ...state };
     }
     case userConstants.CREATE_CAMPAIGN_FAILURE: {
-      state.isLoading = false;
+      state.isCreating = false;
       state.isSuccessful = false;
       state.messageError = "";
 

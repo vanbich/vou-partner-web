@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import validate from "validate.js";
 import _ from "underscore";
+import cookie from "react-cookies";
 
 // Material helpers
 import { CircularProgress, fade, withStyles } from "@material-ui/core";
@@ -47,6 +48,11 @@ import { Portlet, PortletContent } from "../../../../components";
 import styles from "./styles";
 
 import schema from "./schema";
+import {
+  clear,
+  updateEmployeePasswordRequest
+} from "../../../../actions/EmployeeAction";
+import { connect } from "react-redux";
 
 const style = theme => ({
   root: {
@@ -130,13 +136,13 @@ const BootstrapInput = withStyles(theme => ({
 }))(InputBase);
 
 class EmployeesTable extends Component {
-    state = {
+  state = {
     selectedUsers: [],
     rowsPerPage: 10,
     page: 0,
     resetDialog: false,
     isValid: false,
-
+    error: "",
     values: {
       password: "",
       confirm: ""
@@ -174,6 +180,28 @@ class EmployeesTable extends Component {
     this.setState(newState, this.validateForm);
   };
 
+  updatePassword = username => {
+    const { values } = this.state;
+    const token = cookie.load("token");
+
+    if (values.password === "") {
+      this.setState({
+        error: "Password is not entered"
+      });
+    } else if (values.confirm !== values.password) {
+      this.setState({
+        error: "Confirm password is not match"
+      });
+    } else {
+      this.props.doUpdatePassword(
+        username,
+        values.password,
+        values.confirm,
+        token
+      );
+    }
+  };
+
   handleOpen = () => {
     this.setState({
       resetDialog: true
@@ -181,8 +209,45 @@ class EmployeesTable extends Component {
   };
 
   handleClose = () => {
+    this.props.clear();
     this.setState({
-      resetDialog: false
+      resetDialog: false,
+      isValid: false,
+
+      values: {
+        password: "",
+        confirm: ""
+      },
+
+      errors: {
+        password: null,
+        confirm: null
+      },
+
+      touched: {
+        password: false,
+        confirm: false
+      }
+    });
+  };
+
+  handleUpdateFail = () => {
+    this.props.clear();
+    this.setState({
+      values: {
+        password: "",
+        confirm: ""
+      },
+
+      errors: {
+        password: null,
+        confirm: null
+      },
+
+      touched: {
+        password: false,
+        confirm: false
+      }
     });
   };
 
@@ -241,7 +306,7 @@ class EmployeesTable extends Component {
       className,
       users,
       isSuccessful,
-      isLoading,
+      isUpdating,
       messageError
     } = this.props;
     const {
@@ -253,7 +318,8 @@ class EmployeesTable extends Component {
       values,
       touched,
       errors,
-      isValid
+      isValid,
+      error
     } = this.state;
 
     const rootClassName = classNames(classes.root, className);
@@ -262,7 +328,7 @@ class EmployeesTable extends Component {
     const showConfirmError = touched.confirm && errors.confirm;
 
     return (
-      <div style={{ width: "80%", margin: "0 auto" }} >
+      <div style={{ width: "80%", margin: "0 auto" }}>
         <Portlet className={rootClassName}>
           <PortletContent noPadding>
             <PerfectScrollbar>
@@ -345,6 +411,172 @@ class EmployeesTable extends Component {
                             />
                           </IconButton>
                         </TableCell>
+                        <Dialog
+                          open={resetDialog}
+                          fullWidth
+                          maxWidth="sm"
+                          aria-labelledby="customized-dialog-title"
+                          onClose={this.handleClose}
+                        >
+                          <DialogTitle
+                            id="customized-dialog-title"
+                            onClose={this.handleClose}
+                          >
+                            {user.display_name}
+                          </DialogTitle>
+                          {isSuccessful ? (
+                            <Grid
+                              container
+                              direction="row"
+                              justify="center"
+                              alignItems="center"
+                              style={{ minWidth: 500, minHeight: 200 }}
+                            >
+                              <CheckCircleIcon
+                                className={classes.iconSuccess}
+                              />
+                              <Typography
+                                className={classes.successContent}
+                                variant="h4"
+                              >
+                                Successful
+                              </Typography>
+                            </Grid>
+                          ) : (
+                            <>
+                              <DialogContent>
+                                <Grid
+                                  container
+                                  direction="column"
+                                  alignItems="center"
+                                  spacing={3}
+                                >
+                                  <Grid item>
+                                    <Grid
+                                      container
+                                      direction="row"
+                                      alignItems="center"
+                                      justify="space-between"
+                                    >
+                                      <Grid item>
+                                        <InputLabel
+                                          shrink
+                                          htmlFor="bootstrap-input"
+                                          className={classes.typo}
+                                        >
+                                          PASSWORD
+                                        </InputLabel>
+                                      </Grid>
+                                      <Grid item>
+                                        <BootstrapInput
+                                          id="bootstrap-input"
+                                          type="password"
+                                          onChange={event => {
+                                            this.handleFieldChange(
+                                              "password",
+                                              event.target.value
+                                            );
+                                          }}
+                                          value={values.password}
+                                        />
+                                      </Grid>
+                                    </Grid>
+                                  </Grid>
+                                  {showPasswordError && (
+                                    <Typography
+                                      className={classes.fieldError}
+                                      variant="body2"
+                                    >
+                                      {errors.password[0]}
+                                    </Typography>
+                                  )}
+                                  <Grid item>
+                                    <Grid
+                                      container
+                                      direction="row"
+                                      alignItems="center"
+                                      justify="space-between"
+                                    >
+                                      <Grid item>
+                                        <InputLabel
+                                          shrink
+                                          htmlFor="bootstrap-input"
+                                          className={classes.typo}
+                                        >
+                                          CONFIRM
+                                        </InputLabel>
+                                      </Grid>
+                                      <Grid item>
+                                        <BootstrapInput
+                                          id="bootstrap-input"
+                                          type="password"
+                                          onChange={event =>
+                                            this.handleFieldChange(
+                                              "confirm",
+                                              event.target.value
+                                            )
+                                          }
+                                          value={values.confirm}
+                                        />
+                                      </Grid>
+                                    </Grid>
+                                  </Grid>
+                                  {showConfirmError && (
+                                    <Typography
+                                      className={classes.fieldError}
+                                      variant="body2"
+                                    >
+                                      {errors.confirm[0]}
+                                    </Typography>
+                                  )}
+                                  {error && (
+                                    <Typography className={classes.fieldError}>
+                                      {error}
+                                    </Typography>
+                                  )}
+                                  <Grid item>
+                                    {messageError && (
+                                      <Typography
+                                        className={classes.fieldError}
+                                      >
+                                        {messageError}
+                                      </Typography>
+                                    )}
+                                  </Grid>
+                                  {isUpdating && !messageError && (
+                                    <div className={classes.progressWrapper}>
+                                      <CircularProgress />
+                                    </div>
+                                  )}
+                                </Grid>
+                              </DialogContent>
+                              <DialogActions>
+                                {!isSuccessful ? (
+                                  messageError ? (
+                                    <Button
+                                      autoFocus
+                                      onClick={this.handleUpdateFail}
+                                      className={classes.button}
+                                    >
+                                      Try it again
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      autoFocus
+                                      disabled={!isValid}
+                                      onClick={() =>
+                                        this.updatePassword(user.username)
+                                      }
+                                      className={classes.button}
+                                    >
+                                      Reset password
+                                    </Button>
+                                  )
+                                ) : null}
+                              </DialogActions>
+                            </>
+                          )}
+                        </Dialog>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -367,149 +599,6 @@ class EmployeesTable extends Component {
             />
           </PortletContent>
         </Portlet>
-        <Dialog
-          open={resetDialog}
-          fullWidth
-          maxWidth="sm"
-          aria-labelledby="customized-dialog-title"
-          onClose={this.handleClose}
-          >
-          <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>
-            Reset password
-          </DialogTitle>
-          {isSuccessful ? (
-            <Grid
-              container
-              direction="row"
-              justify="center"
-              alignItems="center"
-              style={{ minWidth: 500, minHeight: 200 }}
-            >
-              <CheckCircleIcon className={classes.iconSuccess} />
-              <Typography className={classes.successContent} variant="h4">
-                Successful
-              </Typography>
-            </Grid>
-          ) : (
-            <>
-              <DialogContent>
-                <Grid
-                  container
-                  direction="column"
-                  alignItems="center"
-                  spacing={3}
-                >
-                  <Grid item>
-                    <Grid
-                      container
-                      direction="row"
-                      alignItems="center"
-                      justify="space-between"
-                    >
-                      <Grid item>
-                        <InputLabel
-                          shrink
-                          htmlFor="bootstrap-input"
-                          className={classes.typo}
-                        >
-                          PASSWORD
-                        </InputLabel>
-                      </Grid>
-                      <Grid item>
-                        <BootstrapInput
-                          id="bootstrap-input"
-                          type="password"
-                          onChange={event =>
-                            this.handleFieldChange(
-                              "password",
-                              event.target.value
-                            )
-                          }
-                          value={values.password}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  {showPasswordError && (
-                    <Typography className={classes.fieldError} variant="body2">
-                      {errors.password[0]}
-                    </Typography>
-                  )}
-                  <Grid item>
-                    <Grid
-                      container
-                      direction="row"
-                      alignItems="center"
-                      justify="space-between"
-                    >
-                      <Grid item>
-                        <InputLabel
-                          shrink
-                          htmlFor="bootstrap-input"
-                          className={classes.typo}
-                        >
-                          CONFIRM
-                        </InputLabel>
-                      </Grid>
-                      <Grid item>
-                        <BootstrapInput
-                          id="bootstrap-input"
-                          type="password"
-                          onChange={event =>
-                            this.handleFieldChange(
-                              "confirm",
-                              event.target.value
-                            )
-                          }
-                          value={values.confirm}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  {showConfirmError && (
-                    <Typography className={classes.fieldError} variant="body2">
-                      {errors.confirm[0]}
-                    </Typography>
-                  )}
-                  <Grid item>
-                    {messageError && (
-                      <Typography className={classes.fieldError}>
-                        {messageError}
-                      </Typography>
-                    )}
-                  </Grid>
-                  {isLoading && !messageError && (
-                    <div className={classes.progressWrapper}>
-                      <CircularProgress />
-                    </div>
-                  )}
-                </Grid>
-              </DialogContent>
-              <DialogActions>
-                {!isSuccessful ? (
-                  messageError ? (
-                    <Button
-                      autoFocus
-                      onClick={this.handleCreateEmployeeFail}
-                      className={classes.button}
-                    >
-                      Try it again
-                    </Button>
-                  ) : (
-                    <Button
-                      autoFocus
-                      disabled={!isValid}
-                      onClick={this.createEmployee}
-                      className={classes.button}
-                    >
-                      Reset password
-                    </Button>
-                  )
-                ) : null}
-              </DialogActions>
-            </>
-          )}
-        </Dialog>
       </div>
     );
   }
@@ -529,4 +618,33 @@ EmployeesTable.defaultProps = {
   onShowDetails: () => {}
 };
 
-export default withStyles(styles)(EmployeesTable);
+const mapStateToProps = state => {
+  return {
+    isUpdating: state.Employees.isUpdating,
+    isSuccessful: state.Employees.isSuccessful,
+    messageError: state.Employees.messageError
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    doUpdatePassword: (username, new_password, confirm_password, token) => {
+      dispatch(
+        updateEmployeePasswordRequest(
+          username,
+          new_password,
+          confirm_password,
+          token
+        )
+      );
+    },
+    clear: () => {
+      dispatch(clear());
+    }
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles)(EmployeesTable));

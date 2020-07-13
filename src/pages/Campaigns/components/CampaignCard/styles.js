@@ -195,4 +195,30 @@ export default theme => ({
         fontWeight: 'bold',
         marginBottom: theme.spacing(1)
     },
+    checkTitle: {
+        textTransform: "uppercase",
+        color: "#ff747b",
+        fontSize: 16,
+        marginBottom: theme.spacing(4),
+        fontWeight: 'bold',
+    },
+    cancelButton: {
+        color: "#fff",
+        backgroundColor: "#ffa4a8",
+        "&:hover": {
+            color: "#fff",
+            backgroundColor: "#ffa4a8"
+        }
+    },
+    sureButton:{
+        color: "#ffa4a8",
+        border: "1px solid #ffa4a8",
+        backgroundColor: "#fff",
+        "&:hover": {
+            color: "#ffa4a8",
+            border: "1px solid #ffa4a8",
+            backgroundColor: "#fff",
+        }
+    }
+
 });

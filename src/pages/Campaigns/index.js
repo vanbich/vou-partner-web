@@ -436,7 +436,7 @@ class Campaign extends Component {
         "https://cache.redgiant.com/wp-assets/2019/07/Summer19-Sale-Teaser-Blog.jpg",
       start_time: new Date(),
       end_time: new Date(),
-      imagePreview: "",
+      imagePreview: null,
       part1: true,
       part2: false,
       part3: false
@@ -474,7 +474,7 @@ class Campaign extends Component {
   }
 
   render() {
-    const { classes, isSuccessful, messageError, isLoading } = this.props;
+    const { classes, isSuccessful, messageError, isLoading, isCreating } = this.props;
     const {
       values,
       touched,
@@ -1000,7 +1000,7 @@ class Campaign extends Component {
                         </Typography>
                       </Grid>
                     )}
-                    {isLoading && !messageError && (
+                    {isCreating && !messageError && (
                       <div className={classes.progressWrapper}>
                         <CircularProgress />
                       </div>
@@ -1051,6 +1051,7 @@ const mapStateToProps = state => {
   return {
     id: state.User.id,
     isLoading: state.Campaigns.isLoading,
+    isCreating: state.Campaigns.isCreating,
     isSuccessful: state.Campaigns.isSuccessful,
     messageError: state.Campaigns.messageError,
     myCampaigns: state.Campaigns.myCampaigns,

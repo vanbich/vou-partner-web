@@ -131,11 +131,6 @@ const BootstrapInput = withStyles(theme => ({
 }))(InputBase);
 
 class EmployeeList extends Component {
-  constructor(props) {
-    super(props);
-    this.wrapper = React.createRef();
-  }
-
   state = {
     selectedUsers: [],
     error: null,
@@ -303,16 +298,16 @@ class EmployeeList extends Component {
       );
     }
 
-    return <EmployeesTable onSelect={this.handleSelect} users={myEmployees} ref={this.wrapper}/>;
+    return <EmployeesTable onSelect={this.handleSelect} users={myEmployees}/>;
   }
 
   render() {
     const {
       classes,
-      isLoading,
       messageError,
       isSuccessful,
-      isDeleted,
+      isDeleting,
+      isCreating,
       numbers
     } = this.props;
     const {
@@ -520,7 +515,7 @@ class EmployeeList extends Component {
                       </Typography>
                     )}
                   </Grid>
-                  {isLoading && !messageError && (
+                  {isCreating && !messageError && (
                     <div className={classes.progressWrapper}>
                       <CircularProgress />
                     </div>
@@ -554,7 +549,7 @@ class EmployeeList extends Component {
         </Dialog>
 
         <Dialog
-          open={isDeleted}
+          open={isDeleting}
           fullWidth
           maxWidth="sm"
           aria-labelledby="customized-dialog-title"
@@ -622,11 +617,12 @@ EmployeeList.propTypes = {
 const mapStateToProps = state => {
   return {
     isLoading: state.Employees.isLoading,
+    isCreating: state.Employees.isCreating,
     isSuccessful: state.Employees.isSuccessful,
     myEmployees: state.Employees.myEmployees,
     messageError: state.Employees.messageError,
     numbers: state.Employees.numbers,
-    isDeleted: state.Employees.isDeleted
+    isDeleting: state.Employees.isDeleting
   };
 };
 

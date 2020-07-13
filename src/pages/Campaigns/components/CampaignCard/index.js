@@ -89,6 +89,7 @@ class CampaignCard extends Component {
       openCampaign: false,
       openVoucher: false,
       openGame: false,
+      remind: false,
       valuesCampaign: {
         id: "",
         name: "",
@@ -231,17 +232,30 @@ class CampaignCard extends Component {
     this.props.doDeleteCampaign(token, valuesCampaign.id);
   };
 
+  handleCheckDelete = () => {
+    this.setState({
+      remind: true
+    });
+  };
+
+  handleCancelDelete = () => {
+    this.setState({
+      remind: false
+    });
+  };
+
   handleDeleteSuccess = () => {
     this.props.data();
     this.setState({
-      openCampaign: false
+      openCampaign: false,
+      remind: false
     });
   };
 
   render() {
     const { classes, product, messageError, isLoading, isDeleted } = this.props;
 
-    const { valuesCampaign } = this.state;
+    const { valuesCampaign, remind } = this.state;
 
     return (
       <div className={classes.root} ref={this.wrapper}>
@@ -306,22 +320,69 @@ class CampaignCard extends Component {
           open={this.state.openCampaign}
           innerRef={this.wrapper}
         >
-          <DialogTitle id="customized-dialog-title" onClose={isDeleted ? this.handleDeleteSuccess : this.handleClose}>
+          <DialogTitle
+            id="customized-dialog-title"
+            onClose={isDeleted ? this.handleDeleteSuccess : this.handleClose}
+          >
             {product.name}
           </DialogTitle>
-          {isDeleted ? (
-            <Grid
-              container
-              direction="row"
-              justify="center"
-              alignItems="center"
-              style={{ minWidth: 500, minHeight: 200 }}
-            >
-              <DeleteSweepIcon className={classes.iconDeleted} />
-              <Typography className={classes.deleted} variant="h4">
-                Deleted
-              </Typography>
-            </Grid>
+          {remind ? (
+            isDeleted ? (
+              <Grid
+                container
+                direction="row"
+                justify="center"
+                alignItems="center"
+                style={{ minWidth: 500, minHeight: 200 }}
+              >
+                <DeleteSweepIcon className={classes.iconDeleted} />
+                <Typography className={classes.deleted} variant="h4">
+                  Deleted
+                </Typography>
+              </Grid>
+            ) : (
+              <Grid
+                container
+                direction="column"
+                justify="center"
+                alignItems="center"
+                style={{ minWidth: 500, minHeight: 200 }}
+              >
+                <Grid item>
+                  <Typography className={classes.checkTitle}>
+                    Are you sure to delete this campaign?
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Grid
+                    container
+                    direction="row"
+                    justify="space-between"
+                    alignItems="center"
+                    style={{ minWidth: 200}}
+                  >
+                    <Grid item>
+                      <Button
+                        autoFocus
+                        onClick={this.handleCancelDelete}
+                        className={classes.cancelButton}
+                      >
+                        Cancel
+                      </Button>
+                    </Grid>
+                    <Grid item>
+                      <Button
+                        autoFocus
+                        onClick={this.handleDeleteCampaign}
+                        className={classes.sureButton}
+                      >
+                        Sure
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            )
           ) : (
             <>
               <DialogContent className={classes.dialog}>
@@ -533,7 +594,7 @@ class CampaignCard extends Component {
               <DialogActions>
                 <Button
                   autoFocus
-                  onClick={this.handleDeleteCampaign}
+                  onClick={this.handleCheckDelete}
                   className={classes.button}
                 >
                   Remove
@@ -573,9 +634,7 @@ class CampaignCard extends Component {
                 justify="center"
               >
                 <Grid item>
-                  <Typography className={classes.titlePart}>
-                    Voucher
-                  </Typography>
+                  <Typography className={classes.titlePart}>Voucher</Typography>
                 </Grid>
 
                 <Grid
