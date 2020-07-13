@@ -24,7 +24,7 @@ import styles from './styles';
 
 class EmployeesToolbar extends Component {
   render() {
-    const { classes, className, selectedUsers , onNewEmployee} = this.props;
+    const { classes, className, selectedUsers , onNewEmployee, handleDeleteUsers} = this.props;
 
     const rootClassName = classNames(classes.root, className);
 
@@ -39,7 +39,7 @@ class EmployeesToolbar extends Component {
           {selectedUsers.length > 0 && (
               <IconButton
                   className={classes.deleteButton}
-                  onClick={this.handleDeleteUsers}
+                  onClick={handleDeleteUsers}
               >
                 <DeleteIcon />
               </IconButton>

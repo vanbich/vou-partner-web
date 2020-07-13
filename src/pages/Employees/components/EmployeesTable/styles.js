@@ -11,7 +11,7 @@ export default theme => ({
     alignItems: 'center'
   },
   avatar: {
-    backgroundColor: "#9bc3f2",
+    backgroundColor: "#80b7f2",
     display: 'inline-flex',
     fontSize: '14px',
     fontWeight: 500,
@@ -20,11 +20,39 @@ export default theme => ({
   },
   nameText: {
     display: 'inline-block',
-    marginLeft: theme.spacing.unit * 2,
+    marginLeft: theme.spacing(2),
     fontWeight: 500,
     cursor: 'pointer'
   },
   icon: {
     color: 'green'
-  }
+  },
+    typo: {
+        textTransform: "uppercase",
+        minWidth: 100,
+        textAlign: "center"
+    },
+    textfield: {
+        width: 300,
+        maxWidth: "100%"
+    },
+    button: {
+        color: "#ffffff",
+        backgroundColor: "#9bc3f2",
+        "&:hover": {
+            color: "#ffffff",
+            backgroundColor: "#9bc3f2"
+        }
+    },
+    fieldError: {
+        color: theme.palette.danger.main,
+        textAlign: "center",
+        fontWeight: "bold",
+        marginLeft: theme.spacing(4)
+    },
+    iconSuccess: {
+        color: "green",
+        width: 50,
+        height: 50
+    }
 });

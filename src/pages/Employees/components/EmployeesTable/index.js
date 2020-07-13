@@ -1,13 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 // Externals
-import classNames from 'classnames';
-import PropTypes from 'prop-types';
-import moment from 'moment';
-import PerfectScrollbar from 'react-perfect-scrollbar';
+import classNames from "classnames";
+import PropTypes from "prop-types";
+import PerfectScrollbar from "react-perfect-scrollbar";
+import validate from "validate.js";
+import _ from "underscore";
 
 // Material helpers
-import { withStyles } from '@material-ui/core';
+import { CircularProgress, fade, withStyles } from "@material-ui/core";
 
 // Material components
 import {
@@ -19,23 +20,170 @@ import {
   TableHead,
   TableRow,
   Typography,
-  TablePagination
-} from '@material-ui/core';
-import EditAttributesIcon from '@material-ui/icons/EditAttributes';
+  TablePagination,
+  IconButton,
+  Dialog
+} from "@material-ui/core";
+import MuiDialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
+import MuiDialogContent from "@material-ui/core/DialogContent/DialogContent";
+import MuiDialogActions from "@material-ui/core/DialogActions/DialogActions";
+import InputBase from "@material-ui/core/InputBase/InputBase";
+import Grid from "@material-ui/core/Grid";
+import InputLabel from "@material-ui/core/InputLabel/InputLabel";
+import Button from "@material-ui/core/Button";
+
+// Material icons
+import SettingsApplicationsSharpIcon from "@material-ui/icons/SettingsApplicationsSharp";
+import CloseIcon from "@material-ui/icons/Close";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+
 // Shared helpers
-import { getInitials } from '../../../../helpers';
+import { getInitials } from "../../../../helpers";
 
 // Shared components
-import { Portlet, PortletContent } from '../../../../components';
+import { Portlet, PortletContent } from "../../../../components";
 
 // Component styles
-import styles from './styles';
+import styles from "./styles";
+
+import schema from "./schema";
+
+const style = theme => ({
+  root: {
+    margin: 0,
+    padding: theme.spacing(2)
+  },
+  closeButton: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500]
+  }
+});
+
+const DialogTitle = withStyles(style)(props => {
+  const { children, classes, onClose, ...other } = props;
+  return (
+    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+      <Typography variant="h6">{children}</Typography>
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={onClose}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </MuiDialogTitle>
+  );
+});
+
+const DialogContent = withStyles(theme => ({
+  root: {
+    padding: theme.spacing(2),
+    borderTop: "1px dashed #9bc3f2",
+    borderBottom: "1px dashed #9bc3f2"
+  }
+}))(MuiDialogContent);
+
+const DialogActions = withStyles(theme => ({
+  root: {
+    margin: 0,
+    padding: theme.spacing(1)
+  }
+}))(MuiDialogActions);
+
+const BootstrapInput = withStyles(theme => ({
+  root: {
+    "label + &": {
+      marginTop: theme.spacing(3)
+    }
+  },
+  input: {
+    borderRadius: 4,
+    position: "relative",
+    backgroundColor: theme.palette.common.white,
+    border: "1px solid #ced4da",
+    fontSize: 16,
+    width: "auto",
+    padding: "10px 12px",
+    transition: theme.transitions.create(["border-color", "box-shadow"]),
+    // Use the system font instead of the default Roboto font.
+    fontFamily: [
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"'
+    ].join(","),
+    "&:focus": {
+      boxShadow: `${fade("#9bc3f2", 0.25)} 0 0 0 0.2rem`,
+      borderColor: theme.palette.primary.main
+    }
+  }
+}))(InputBase);
 
 class EmployeesTable extends Component {
-  state = {
+    state = {
     selectedUsers: [],
     rowsPerPage: 10,
-    page: 0
+    page: 0,
+    resetDialog: false,
+    isValid: false,
+
+    values: {
+      password: "",
+      confirm: ""
+    },
+
+    errors: {
+      password: null,
+      confirm: null
+    },
+
+    touched: {
+      password: false,
+      confirm: false
+    }
+  };
+
+  validateForm = _.debounce(() => {
+    const { values } = this.state;
+
+    const newState = { ...this.state };
+    const errors = validate(values, schema);
+
+    newState.errors = errors || {};
+    newState.isValid = !errors;
+
+    this.setState(newState);
+  }, 300);
+
+  handleFieldChange = (field, value) => {
+    const newState = { ...this.state };
+
+    newState.touched[field] = true;
+    newState.values[field] = value;
+
+    this.setState(newState, this.validateForm);
+  };
+
+  handleOpen = () => {
+    this.setState({
+      resetDialog: true
+    });
+  };
+
+  handleClose = () => {
+    this.setState({
+      resetDialog: false
+    });
   };
 
   handleSelectAll = event => {
@@ -88,111 +236,281 @@ class EmployeesTable extends Component {
   };
 
   render() {
-    const { classes, className, users } = this.props;
-    const { activeTab, selectedUsers, rowsPerPage, page } = this.state;
+    const {
+      classes,
+      className,
+      users,
+      isSuccessful,
+      isLoading,
+      messageError
+    } = this.props;
+    const {
+      activeTab,
+      selectedUsers,
+      rowsPerPage,
+      page,
+      resetDialog,
+      values,
+      touched,
+      errors,
+      isValid
+    } = this.state;
 
     const rootClassName = classNames(classes.root, className);
 
+    const showPasswordError = touched.password && errors.password;
+    const showConfirmError = touched.confirm && errors.confirm;
+
     return (
-      <Portlet className={rootClassName}>
-        <PortletContent noPadding>
-          <PerfectScrollbar>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell align="left">
-                    <Checkbox
-                      checked={selectedUsers.length === users.length}
-                      color="primary"
-                      indeterminate={
-                        selectedUsers.length > 0 &&
-                        selectedUsers.length < users.length
+      <div style={{ width: "80%", margin: "0 auto" }} >
+        <Portlet className={rootClassName}>
+          <PortletContent noPadding>
+            <PerfectScrollbar>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">
+                      <Checkbox
+                        checked={selectedUsers.length === users.length}
+                        style={{ color: "#80b7f2" }}
+                        indeterminate={
+                          selectedUsers.length > 0 &&
+                          selectedUsers.length < users.length
+                        }
+                        onChange={this.handleSelectAll}
+                      />
+                    </TableCell>
+                    <TableCell align="center">Name</TableCell>
+                    <TableCell align="center">Username</TableCell>
+                    <TableCell align="center">Update</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {users
+                    .filter(user => {
+                      if (activeTab === 1) {
+                        return !user.returning;
                       }
-                      onChange={this.handleSelectAll}
-                    />
-                    Name
-                  </TableCell>
-                  <TableCell align="left">Username</TableCell>
-                  <TableCell align="left">Password</TableCell>
-                  <TableCell align="left">Update</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users
-                  .filter(user => {
-                    if (activeTab === 1) {
-                      return !user.returning;
-                    }
 
-                    if (activeTab === 2) {
-                      return user.returning;
-                    }
+                      if (activeTab === 2) {
+                        return user.returning;
+                      }
 
-                    return user;
-                  })
-                  .slice(0, rowsPerPage)
-                  .map(user => (
-                    <TableRow
-                      className={classes.tableRow}
-                      hover
-                      key={user.id}
-                      selected={selectedUsers.indexOf(user.id) !== -1}
-                    >
-                      <TableCell className={classes.tableCell} align="left">
-                        <div className={classes.tableCellInner}>
+                      return user;
+                    })
+                    .slice(0, rowsPerPage)
+                    .map(user => (
+                      <TableRow
+                        className={classes.tableRow}
+                        hover
+                        key={user.id}
+                        selected={selectedUsers.indexOf(user.id) !== -1}
+                      >
+                        <TableCell className={classes.tableCell} align="center">
                           <Checkbox
                             checked={selectedUsers.indexOf(user.id) !== -1}
-                            color="primary"
                             onChange={event =>
                               this.handleSelectOne(event, user.id)
                             }
+                            style={{ color: "#80b7f2" }}
                             value="true"
                           />
+                        </TableCell>
+                        <TableCell className={classes.tableCell} align="center">
                           <Avatar
                             className={classes.avatar}
                             src={user.avatarUrl}
                           >
-                            {getInitials(user.name)}
+                            {getInitials(user.display_name)}
                           </Avatar>
                           <Typography
-                              className={classes.nameText}
-                              variant="body1"
+                            className={classes.nameText}
+                            variant="body1"
                           >
-                            {user.name}
+                            {user.display_name}
                           </Typography>
-                        </div>
-                      </TableCell >
-                      <TableCell className={classes.tableCell} align="left">
-                        {user.id}
-                      </TableCell>
-                      <TableCell className={classes.tableCell} align="left">
-                        {moment(user.createdAt).format('DD/MM/YYYY')}
-                      </TableCell>
-                      <TableCell className={classes.tableCell} align="left">
-                        <EditAttributesIcon className={classes.icon}/>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </PerfectScrollbar>
-          <TablePagination
-            backIconButtonProps={{
-              'aria-label': 'Previous Page'
-            }}
-            component="div"
-            count={users.length}
-            nextIconButtonProps={{
-              'aria-label': 'Next Page'
-            }}
-            onChangePage={this.handleChangePage}
-            onChangeRowsPerPage={this.handleChangeRowsPerPage}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            rowsPerPageOptions={[5, 10, 25]}
-          />
-        </PortletContent>
-      </Portlet>
+                        </TableCell>
+                        <TableCell className={classes.tableCell} align="center">
+                          <Typography
+                            className={classes.nameText}
+                            variant="body1"
+                          >
+                            {user.username}
+                          </Typography>
+                        </TableCell>
+                        <TableCell className={classes.tableCell} align="center">
+                          <IconButton onClick={this.handleOpen}>
+                            <SettingsApplicationsSharpIcon
+                              className={classes.icon}
+                            />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </PerfectScrollbar>
+            <TablePagination
+              backIconButtonProps={{
+                "aria-label": "Previous Page"
+              }}
+              component="div"
+              count={users.length}
+              nextIconButtonProps={{
+                "aria-label": "Next Page"
+              }}
+              onChangePage={this.handleChangePage}
+              onChangeRowsPerPage={this.handleChangeRowsPerPage}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={[5, 10, 25]}
+            />
+          </PortletContent>
+        </Portlet>
+        <Dialog
+          open={resetDialog}
+          fullWidth
+          maxWidth="sm"
+          aria-labelledby="customized-dialog-title"
+          onClose={this.handleClose}
+          >
+          <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>
+            Reset password
+          </DialogTitle>
+          {isSuccessful ? (
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              style={{ minWidth: 500, minHeight: 200 }}
+            >
+              <CheckCircleIcon className={classes.iconSuccess} />
+              <Typography className={classes.successContent} variant="h4">
+                Successful
+              </Typography>
+            </Grid>
+          ) : (
+            <>
+              <DialogContent>
+                <Grid
+                  container
+                  direction="column"
+                  alignItems="center"
+                  spacing={3}
+                >
+                  <Grid item>
+                    <Grid
+                      container
+                      direction="row"
+                      alignItems="center"
+                      justify="space-between"
+                    >
+                      <Grid item>
+                        <InputLabel
+                          shrink
+                          htmlFor="bootstrap-input"
+                          className={classes.typo}
+                        >
+                          PASSWORD
+                        </InputLabel>
+                      </Grid>
+                      <Grid item>
+                        <BootstrapInput
+                          id="bootstrap-input"
+                          type="password"
+                          onChange={event =>
+                            this.handleFieldChange(
+                              "password",
+                              event.target.value
+                            )
+                          }
+                          value={values.password}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  {showPasswordError && (
+                    <Typography className={classes.fieldError} variant="body2">
+                      {errors.password[0]}
+                    </Typography>
+                  )}
+                  <Grid item>
+                    <Grid
+                      container
+                      direction="row"
+                      alignItems="center"
+                      justify="space-between"
+                    >
+                      <Grid item>
+                        <InputLabel
+                          shrink
+                          htmlFor="bootstrap-input"
+                          className={classes.typo}
+                        >
+                          CONFIRM
+                        </InputLabel>
+                      </Grid>
+                      <Grid item>
+                        <BootstrapInput
+                          id="bootstrap-input"
+                          type="password"
+                          onChange={event =>
+                            this.handleFieldChange(
+                              "confirm",
+                              event.target.value
+                            )
+                          }
+                          value={values.confirm}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  {showConfirmError && (
+                    <Typography className={classes.fieldError} variant="body2">
+                      {errors.confirm[0]}
+                    </Typography>
+                  )}
+                  <Grid item>
+                    {messageError && (
+                      <Typography className={classes.fieldError}>
+                        {messageError}
+                      </Typography>
+                    )}
+                  </Grid>
+                  {isLoading && !messageError && (
+                    <div className={classes.progressWrapper}>
+                      <CircularProgress />
+                    </div>
+                  )}
+                </Grid>
+              </DialogContent>
+              <DialogActions>
+                {!isSuccessful ? (
+                  messageError ? (
+                    <Button
+                      autoFocus
+                      onClick={this.handleCreateEmployeeFail}
+                      className={classes.button}
+                    >
+                      Try it again
+                    </Button>
+                  ) : (
+                    <Button
+                      autoFocus
+                      disabled={!isValid}
+                      onClick={this.createEmployee}
+                      className={classes.button}
+                    >
+                      Reset password
+                    </Button>
+                  )
+                ) : null}
+              </DialogActions>
+            </>
+          )}
+        </Dialog>
+      </div>
     );
   }
 }

@@ -1,8 +1,9 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 
 // Externals
 import PropTypes from "prop-types";
-// import cookie from "react-cookies";
+import cookie from "react-cookies";
 import validate from "validate.js";
 import _ from "underscore";
 
@@ -18,16 +19,17 @@ import IconButton from "@material-ui/core/IconButton";
 import MuiDialogContent from "@material-ui/core/DialogContent/DialogContent";
 import MuiDialogActions from "@material-ui/core/DialogActions/DialogActions";
 import Dialog from "@material-ui/core/Dialog";
-import FormControl from "@material-ui/core/FormControl";
+import InputBase from "@material-ui/core/InputBase/InputBase";
+import InputLabel from "@material-ui/core/InputLabel";
+import Button from "@material-ui/core/Button";
 
 //Material icons
 import CloseIcon from "@material-ui/icons/Close";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 
 // Shared layouts
 import { Dashboard as DashboardLayout } from "../../layouts";
-
-// Shared services
-import { getUsers } from "../../services/user";
 
 // Custom components
 import { EmployeesToolbar, EmployeesTable } from "./components";
@@ -37,9 +39,15 @@ import styles from "./style";
 
 // Form validation schema
 import schema from "./schema";
-import InputBase from "@material-ui/core/InputBase/InputBase";
-import InputLabel from "@material-ui/core/InputLabel";
-import Button from "@material-ui/core/Button";
+
+// Service methods
+import { connect } from "react-redux";
+import {
+  clear,
+  createEmployeeRequest,
+  deleteEmployeeRequest,
+  getAllEmployeeRequest
+} from "../../actions/EmployeeAction";
 
 const style = theme => ({
   root: {
@@ -116,22 +124,23 @@ const BootstrapInput = withStyles(theme => ({
       '"Segoe UI Symbol"'
     ].join(","),
     "&:focus": {
-      boxShadow: `${fade('#9bc3f2', 0.25)} 0 0 0 0.2rem`,
+      boxShadow: `${fade("#9bc3f2", 0.25)} 0 0 0 0.2rem`,
       borderColor: theme.palette.primary.main
     }
   }
 }))(InputBase);
 
 class EmployeeList extends Component {
-  signal = true;
+  constructor(props) {
+    super(props);
+    this.wrapper = React.createRef();
+  }
 
   state = {
-    isLoading: false,
-    limit: 10,
-    users: [],
     selectedUsers: [],
     error: null,
     openCreate: false,
+    isValid: false,
 
     values: {
       display_name: "",
@@ -152,37 +161,13 @@ class EmployeeList extends Component {
     }
   };
 
-  async getUsers() {
-    try {
-      this.setState({ isLoading: true });
-
-      const { limit } = this.state;
-
-      const { users } = await getUsers(limit);
-
-      if (this.signal) {
-        this.setState({
-          isLoading: false,
-          users
-        });
-      }
-    } catch (error) {
-      if (this.signal) {
-        this.setState({
-          isLoading: false,
-          error
-        });
-      }
-    }
-  }
+  getEmployees = () => {
+    const token = cookie.load("token");
+    this.props.doGetEmployees(token);
+  };
 
   componentDidMount() {
-    this.signal = true;
-    this.getUsers();
-  }
-
-  componentWillUnmount() {
-    this.signal = false;
+    this.getEmployees();
   }
 
   validateForm = _.debounce(() => {
@@ -208,13 +193,40 @@ class EmployeeList extends Component {
 
   handleOpenCreate = () => {
     this.setState({
-      openCreate: true
+      openCreate: true,
+
+      values: {
+        display_name: "",
+        username: "",
+        password: ""
+      },
+
+      touched: {
+        display_name: false,
+        username: false,
+        password: false
+      },
+
+      errors: {
+        display_name: null,
+        username: null,
+        password: null
+      }
     });
   };
 
   handleCloseCreate = () => {
+    this.getEmployees();
     this.setState({
       openCreate: false
+    });
+  };
+
+  handleCloseDelete = () => {
+    this.getEmployees();
+    this.props.clear();
+    this.setState({
+      selectedUsers: []
     });
   };
 
@@ -222,9 +234,54 @@ class EmployeeList extends Component {
     this.setState({ selectedUsers });
   };
 
+  createEmployee = () => {
+    const token = cookie.load("token");
+    const { values } = this.state;
+
+    console.log("createEmployee", values);
+    this.props.doCreateEmployee(
+      values.username,
+      values.password,
+      values.display_name,
+      token
+    );
+  };
+
+  deleteEmployee = () => {
+    const { selectedUsers } = this.state;
+    const token = cookie.load("token");
+
+    for (let i = 0; i < selectedUsers.length; i++) {
+      setTimeout(this.props.doDeleteEmployee(token, selectedUsers[i]), 2000);
+    }
+  };
+
+  handleCreateEmployeeFail = () => {
+    this.props.clear();
+    this.setState({
+      values: {
+        display_name: "",
+        username: "",
+        password: ""
+      },
+
+      touched: {
+        display_name: false,
+        username: false,
+        password: false
+      },
+
+      errors: {
+        display_name: null,
+        username: null,
+        password: null
+      }
+    });
+  };
+
   renderUsers() {
-    const { classes } = this.props;
-    const { isLoading, users, error } = this.state;
+    const { classes, isLoading, myEmployees } = this.props;
+    const { error } = this.state;
 
     if (isLoading) {
       return (
@@ -238,16 +295,46 @@ class EmployeeList extends Component {
       return <Typography variant="h6">{error}</Typography>;
     }
 
-    if (users.length === 0) {
-      return <Typography variant="h6">There are no users</Typography>;
+    if (myEmployees.length === 0) {
+      return (
+        <Typography variant="h6" style={{ textAlign: "center" }}>
+          There are no employees
+        </Typography>
+      );
     }
 
-    return <EmployeesTable onSelect={this.handleSelect} users={users} />;
+    return <EmployeesTable onSelect={this.handleSelect} users={myEmployees} ref={this.wrapper}/>;
   }
 
   render() {
-    const { classes } = this.props;
-    const { selectedUsers, openCreate } = this.state;
+    const {
+      classes,
+      isLoading,
+      messageError,
+      isSuccessful,
+      isDeleted,
+      numbers
+    } = this.props;
+    const {
+      selectedUsers,
+      openCreate,
+      values,
+      touched,
+      errors,
+      isValid
+    } = this.state;
+
+    const showNameError = touched.display_name && errors.display_name;
+    const showUsernameError = touched.username && errors.username;
+    const showPasswordError = touched.password && errors.password;
+
+    const token = cookie.load("token");
+
+    console.log("selectedUsers", selectedUsers);
+
+    if (!token) {
+      return <Redirect to="/sign-in" />;
+    }
 
     return (
       <DashboardLayout title="Employees">
@@ -280,9 +367,11 @@ class EmployeeList extends Component {
           <EmployeesToolbar
             selectedUsers={selectedUsers}
             onNewEmployee={this.handleOpenCreate}
+            handleDeleteUsers={this.deleteEmployee}
           />
-          <div className={classes.content}>{this.renderUsers()}</div>
+          <div className={classes.content} >{this.renderUsers()}</div>
         </div>
+
         <Dialog
           open={openCreate}
           onClose={this.handleCloseCreate}
@@ -296,54 +385,229 @@ class EmployeeList extends Component {
           >
             Create employee
           </DialogTitle>
-          <DialogContent>
+          {isSuccessful ? (
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              style={{ minWidth: 500, minHeight: 200 }}
+            >
+              <CheckCircleIcon className={classes.icon} />
+              <Typography className={classes.successContent} variant="h4">
+                Successful
+              </Typography>
+            </Grid>
+          ) : (
+            <>
+              <DialogContent>
+                <Grid
+                  container
+                  direction="column"
+                  alignItems="center"
+                  spacing={3}
+                >
+                  <Grid item>
+                    <Grid
+                      container
+                      direction="row"
+                      alignItems="center"
+                      justify="space-between"
+                    >
+                      <Grid item>
+                        <InputLabel
+                          shrink
+                          htmlFor="bootstrap-input"
+                          className={classes.typo}
+                        >
+                          NAME
+                        </InputLabel>
+                      </Grid>
+                      <Grid item>
+                        <BootstrapInput
+                          id="bootstrap-input"
+                          onChange={event =>
+                            this.handleFieldChange(
+                              "display_name",
+                              event.target.value
+                            )
+                          }
+                          value={values.display_name}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  {showNameError && (
+                    <Typography className={classes.fieldError} variant="body2">
+                      {errors.display_name[0]}
+                    </Typography>
+                  )}
+                  <Grid item>
+                    <Grid
+                      container
+                      direction="row"
+                      alignItems="center"
+                      justify="space-between"
+                    >
+                      <Grid item>
+                        <InputLabel
+                          shrink
+                          htmlFor="bootstrap-input"
+                          className={classes.typo}
+                        >
+                          USERNAME
+                        </InputLabel>
+                      </Grid>
+                      <Grid item>
+                        <BootstrapInput
+                          id="bootstrap-input"
+                          onChange={event =>
+                            this.handleFieldChange(
+                              "username",
+                              event.target.value
+                            )
+                          }
+                          value={values.username}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  {showUsernameError && (
+                    <Typography className={classes.fieldError} variant="body2">
+                      {errors.username[0]}
+                    </Typography>
+                  )}
+                  <Grid item>
+                    <Grid
+                      container
+                      direction="row"
+                      alignItems="center"
+                      justify="space-between"
+                    >
+                      <Grid item>
+                        <InputLabel
+                          shrink
+                          htmlFor="bootstrap-input"
+                          className={classes.typo}
+                        >
+                          PASSWORD
+                        </InputLabel>
+                      </Grid>
+                      <Grid item>
+                        <BootstrapInput
+                          id="bootstrap-input"
+                          type="password"
+                          onChange={event =>
+                            this.handleFieldChange(
+                              "password",
+                              event.target.value
+                            )
+                          }
+                          value={values.password}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  {showPasswordError && (
+                    <Typography className={classes.fieldError} variant="body2">
+                      {errors.password[0]}
+                    </Typography>
+                  )}
+                  <Grid item>
+                    {messageError && (
+                      <Typography className={classes.fieldError}>
+                        {messageError}
+                      </Typography>
+                    )}
+                  </Grid>
+                  {isLoading && !messageError && (
+                    <div className={classes.progressWrapper}>
+                      <CircularProgress />
+                    </div>
+                  )}
+                </Grid>
+              </DialogContent>
+              <DialogActions>
+                {!isSuccessful ? (
+                  messageError ? (
+                    <Button
+                      autoFocus
+                      onClick={this.handleCreateEmployeeFail}
+                      className={classes.button}
+                    >
+                      Try it again
+                    </Button>
+                  ) : (
+                    <Button
+                      autoFocus
+                      disabled={!isValid}
+                      onClick={this.createEmployee}
+                      className={classes.button}
+                    >
+                      Create employee
+                    </Button>
+                  )
+                ) : null}
+              </DialogActions>
+            </>
+          )}
+        </Dialog>
+
+        <Dialog
+          open={isDeleted}
+          fullWidth
+          maxWidth="sm"
+          aria-labelledby="customized-dialog-title"
+          onClose={this.handleCloseDelete}
+        >
+          {numbers === selectedUsers.length ? (
             <Grid
               container
               direction="column"
-              alignContent="center"
               justify="center"
+              alignItems="center"
+              style={{ minWidth: 500, minHeight: 200 }}
             >
-              <Grid item xs={6}>
-                <FormControl className={classes.paper}>
-                  <InputLabel shrink htmlFor="bootstrap-input">
-                    DISPLAY NAME
-                  </InputLabel>
-                  <BootstrapInput
-                    id="bootstrap-input"
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl className={classes.paper}>
-                  <InputLabel shrink htmlFor="bootstrap-input">
-                    USERNAME
-                  </InputLabel>
-                  <BootstrapInput
-                      id="bootstrap-input"
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl className={classes.paper}>
-                  <InputLabel shrink htmlFor="bootstrap-input">
-                    PASSWORD
-                  </InputLabel>
-                  <BootstrapInput
-                      id="bootstrap-input"
-                  />
-                </FormControl>
+              <Grid
+                item
+                container
+                direction="row"
+                justify="center"
+                alignItems="center"
+              >
+                <CheckCircleIcon className={classes.iconDeleted} />
+                <Typography className={classes.deleted} variant="h4">
+                  Deleted
+                </Typography>
               </Grid>
             </Grid>
-          </DialogContent>
-          <DialogActions>
-            <Button
-                autoFocus
-                // onClick={this.closeInfoGame}
-                className={classes.button}
+          ) : (
+            <Grid
+              container
+              direction="column"
+              justify="center"
+              alignItems="center"
+              style={{ minWidth: 500, minHeight: 200 }}
             >
-              Create employee
-            </Button>
-          </DialogActions>
+              <Grid item>
+                <Typography variant="h5" style={{ textAlign: "center" }}>
+                  {numbers} / {selectedUsers.length}
+                </Typography>
+              </Grid>
+              <Grid
+                item
+                container
+                direction="row"
+                justify="center"
+                alignItems="center"
+              >
+                <DeleteSweepIcon className={classes.iconDeleted} />
+                <Typography className={classes.deleted} variant="h4">
+                  Deleting...
+                </Typography>
+              </Grid>
+            </Grid>
+          )}
         </Dialog>
       </DashboardLayout>
     );
@@ -355,4 +619,35 @@ EmployeeList.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(EmployeeList);
+const mapStateToProps = state => {
+  return {
+    isLoading: state.Employees.isLoading,
+    isSuccessful: state.Employees.isSuccessful,
+    myEmployees: state.Employees.myEmployees,
+    messageError: state.Employees.messageError,
+    numbers: state.Employees.numbers,
+    isDeleted: state.Employees.isDeleted
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    doGetEmployees: token => {
+      dispatch(getAllEmployeeRequest(token));
+    },
+    doCreateEmployee: (username, password, display_name, token) => {
+      dispatch(createEmployeeRequest(username, password, display_name, token));
+    },
+    doDeleteEmployee: (token, id) => {
+      dispatch(deleteEmployeeRequest(token, id));
+    },
+    clear: () => {
+      dispatch(clear());
+    }
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles)(EmployeeList));

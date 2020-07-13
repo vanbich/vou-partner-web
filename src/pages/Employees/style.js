@@ -6,27 +6,19 @@ export default theme => ({
     marginTop: theme.spacing(2)
   },
   progressWrapper: {
-    paddingTop: '48px',
-    paddingBottom: '24px',
-    display: 'flex',
-    justifyContent: 'center'
-  },
-  paper: {
-    alignItems: "center",
-    width: "auto",
-    marginBottom: theme.spacing(1)
+    paddingTop: "48px",
+    paddingBottom: "24px",
+    display: "flex",
+    justifyContent: "center"
   },
   typo: {
-    padding: 10,
-    fontSize: 11,
-    backgroundColor: "#ebebeb",
     textTransform: "uppercase",
-    width: 70,
-    textAlign: 'center',
+    minWidth: 100,
+    textAlign: "center"
   },
   textfield: {
     width: 300,
-    maxWidth: "100%",
+    maxWidth: "100%"
   },
   button: {
     color: "#ffffff",
@@ -36,4 +28,24 @@ export default theme => ({
       backgroundColor: "#9bc3f2"
     }
   },
+  fieldError: {
+    color: theme.palette.danger.main,
+    textAlign: "center",
+    fontWeight: "bold",
+    marginLeft: theme.spacing(4)
+  },
+  icon: {
+    color: "green",
+    width: 50,
+    height: 50
+  },
+  deleted: {
+    color: "red",
+    marginLeft: theme.spacing(2)
+  },
+  iconDeleted: {
+    color: "red",
+    width: 50,
+    height: 50
+  }
 });
