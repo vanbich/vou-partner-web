@@ -43,22 +43,22 @@ class Dashboard extends Component {
         <Grid
           container
           direction="row"
-          justify="center"
+          justify="space-around"
           alignItems="center"
           style={{ marginBottom: "10px", backgroundColor: "#2aa1fb" }}
         >
-          <Grid item lg={5} md={6} xl={5} xs={12}>
+          <Grid item>
             <Typography
               style={{
                 fontFamily: "Pacifico",
-                fontSize: "30px",
+                fontSize: 30,
                 color: "white"
               }}
             >
               What's news?
             </Typography>
           </Grid>
-          <Grid item lg={6} md={6} xl={6} xs={12}>
+          <Grid item>
             <Box display="flex" justifyContent="center" m={1} p={1}>
               <img alt="Brainalytica logo" src="/images/banners/analys.png" />
             </Box>

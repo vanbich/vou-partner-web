@@ -58,10 +58,9 @@ class Sidebar extends Component {
           <Grid
             container
             direction="row"
-            justify="space-around"
+            justify="center"
             alignItems="center"
             item
-            xs={6}
           >
             <Link className={classes.logoLink} to="/">
               <img

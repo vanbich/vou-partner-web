@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-// import { LocalizeProvider } from 'react-localize-redux'
+import './assets/fonts/FranciscoDemo.ttf';
 
 ReactDOM.render(
     <React.StrictMode>
