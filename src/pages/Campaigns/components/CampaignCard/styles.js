@@ -219,6 +219,14 @@ export default theme => ({
             border: "1px solid #ffa4a8",
             backgroundColor: "#fff",
         }
-    }
-
+    },
+    progressWrapper: {
+        paddingTop: "48px",
+        paddingBottom: "24px",
+        display: "flex",
+        justifyContent: "center"
+    },
+    progress: {
+        color: "#ffa4a8",
+    },
 });

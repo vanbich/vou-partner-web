@@ -145,7 +145,6 @@ const getAllCampaignsActionRequest = () => {
 
 export const getAllCampaignsRequest = (token, id) => async dispatch => {
   dispatch(getAllCampaignsActionRequest());
-
   try {
     const res = await axios({
       method: "GET",
@@ -211,6 +210,62 @@ export const deleteCampaignRequest = (token, id) => {
       }
     });
   };
+};
+
+const updateCampaignActionRequest = () => {
+  return {
+    type: userConstants.UPDATE_CAMPAIGN_REQUEST,
+  };
+};
+
+const updateCampaignActionSuccess = res => {
+  return {
+    type: userConstants.UPDATE_CAMPAIGN_SUCCESS,
+  };
+};
+
+const updateCampaignActionFailure = err => {
+  return {
+    type: userConstants.UPDATE_CAMPAIGN_FAILURE,
+    payload: {
+      err
+    }
+  };
+};
+
+export const updateCampaignRequest = (
+  name,
+  image,
+  discount,
+  description,
+  start_time,
+  end_time,
+  token,
+  id
+) => async dispatch => {
+  dispatch(updateCampaignActionRequest());
+  try {
+    const res = await axios({
+      method: "PATCH",
+      url: `https://vouapp-api.herokuapp.com/campaign/${id}`,
+      headers: {
+        token: `JWT ${token}`
+      },
+      data: {
+        name,
+        image,
+        discount,
+        description,
+        start_time,
+        end_time
+      }
+    });
+
+    console.log("updateCampaign", res);
+    dispatch(updateCampaignActionSuccess());
+  } catch (err) {
+    dispatch(updateCampaignActionFailure(err));
+  }
 };
 
 export const clear = () => {

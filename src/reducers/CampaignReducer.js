@@ -8,6 +8,7 @@ const initState = {
   isLoading: false,
   isCreating: false,
   isDeleted: false,
+  isUpdating: false,
   statisticData: {
     labels: [],
     datasets: [
@@ -109,6 +110,7 @@ const Campaigns = (state = initState, action) => {
       }
       return { ...state };
     }
+
     case userConstants.DELETE_CAMPAIGN_REQUEST: {
       state.isLoading = true;
       state.isDeleted = false;
@@ -127,6 +129,26 @@ const Campaigns = (state = initState, action) => {
       state.messageError = null;
       return { ...state };
     }
+
+    case userConstants.UPDATE_CAMPAIGN_REQUEST:{
+      state.isUpdating =  true;
+      state.isSuccessful = false;
+      state.messageError = null;
+      return {...state}
+    }
+    case userConstants.UPDATE_CAMPAIGN_SUCCESS:{
+      state.isUpdating =  false;
+      state.isSuccessful = true;
+      state.messageError = null;
+      return {...state}
+    }
+    case userConstants.UPDATE_CAMPAIGN_FAILURE:{
+      state.isUpdating =  false;
+      state.isSuccessful = true;
+      state.messageError = action.payload.err;
+      return {...state}
+    }
+
     case userConstants.REFRESH_STATE_CAMPAIGN: {
       state.isLoading = false;
       state.isSuccessful = false;

@@ -34,7 +34,11 @@ import styles from "./styles";
 
 // Service method
 import { connect } from "react-redux";
-import { deleteCampaignRequest } from "../../../../actions/CampaignActions";
+import {
+  deleteCampaignRequest,
+  updateCampaignRequest
+} from "../../../../actions/CampaignActions";
+import { storage } from "../../../../firebase/index";
 
 const style = theme => ({
   root: {
@@ -90,6 +94,7 @@ class CampaignCard extends Component {
       openVoucher: false,
       openGame: false,
       remind: false,
+      imageCampaign: "",
       valuesCampaign: {
         id: "",
         name: "",
@@ -103,7 +108,6 @@ class CampaignCard extends Component {
         games: []
       }
     };
-    this.wrapper = React.createRef();
   }
 
   componentDidMount() {
@@ -111,6 +115,7 @@ class CampaignCard extends Component {
     console.log("product", product);
 
     this.setState({
+      imageCampaign: product.image,
       valuesCampaign: {
         id: product.id,
         promo_code: product.promo_code,
@@ -125,6 +130,7 @@ class CampaignCard extends Component {
       }
     });
   }
+
   closeInfoGame = () => {
     this.setState({
       openGame: false
@@ -193,14 +199,6 @@ class CampaignCard extends Component {
     });
   };
 
-  handleChangeNumberOfVouchers = event => {
-    const state = this.state.valuesCampaign;
-    state.count = event.target.value;
-    this.setState({
-      valuesCampaign: { ...state }
-    });
-  };
-
   handleChangeDiscount = event => {
     const state = this.state.valuesCampaign;
     state.discount = event.target.value;
@@ -209,19 +207,64 @@ class CampaignCard extends Component {
     });
   };
 
-  handleChangeCode = event => {
+  handleImageChange = e => {
     const state = this.state.valuesCampaign;
-    state.promo_code = event.target.value;
+    state.image = URL.createObjectURL(e.target.files[0]);
     this.setState({
+      imageCampaign: e.target.files[0],
       valuesCampaign: { ...state }
     });
   };
 
-  handleSaveChangeCampaign = () => {
-    const { valuesCampaign } = this.state;
-    console.log("valuesCampaign", valuesCampaign);
+  dateToString = date => {
+    return `${date.getFullYear()}-${
+      date.getMonth() + 1 < 10
+        ? "0" + (date.getMonth() + 1)
+        : date.getMonth() + 1
+    }-${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}`;
+  };
 
-    //TODO: API Save change campaign
+  handleSaveChangeCampaign = () => {
+    const { valuesCampaign, imageCampaign } = this.state;
+    const token = cookie.load("token");
+    console.log(
+      "valuesCampaign",
+      valuesCampaign.name,
+      imageCampaign,
+      valuesCampaign.discount,
+      valuesCampaign.description,
+      this.dateToString(valuesCampaign.start_time),
+      this.dateToString(valuesCampaign.end_time),
+      token,
+      valuesCampaign.id
+    );
+
+    const uploadTask = storage
+        .ref(`${valuesCampaign.id}/campaigns/${imageCampaign.name}`)
+        .put(imageCampaign);
+
+    uploadTask.on(
+        "state_changed",
+        snapShot => {
+          //takes a snap shot of the process as it is happening
+          console.log(snapShot);
+        },
+        err => {
+          this.setState({
+            imageCampaign: err
+          });
+        },
+        () => {
+          storage
+              .ref(`${valuesCampaign.id}/campaigns/`)
+              .child(imageCampaign.name)
+              .getDownloadURL()
+              .then(fireBaseUrl => {
+                console.log("url", fireBaseUrl);
+                this.props.doUpdateCampaign(valuesCampaign.name, fireBaseUrl,valuesCampaign.discount, valuesCampaign.description, this.dateToString(valuesCampaign.start_time),this.dateToString(valuesCampaign.end_time),token,valuesCampaign.id);
+              });
+        }
+    );
   };
 
   handleDeleteCampaign = () => {
@@ -253,12 +296,12 @@ class CampaignCard extends Component {
   };
 
   render() {
-    const { classes, product, messageError, isLoading, isDeleted } = this.props;
+    const { classes, product, messageError,  isDeleted,isUpdating } = this.props;
 
     const { valuesCampaign, remind } = this.state;
 
     return (
-      <div className={classes.root} ref={this.wrapper}>
+      <div className={classes.root}>
         <Card className={classes.coupon}>
           <Grid
             container
@@ -318,7 +361,6 @@ class CampaignCard extends Component {
           onClose={isDeleted ? this.handleDeleteSuccess : this.handleClose}
           aria-labelledby="customized-dialog-title"
           open={this.state.openCampaign}
-          innerRef={this.wrapper}
         >
           <DialogTitle
             id="customized-dialog-title"
@@ -359,7 +401,7 @@ class CampaignCard extends Component {
                     direction="row"
                     justify="space-between"
                     alignItems="center"
-                    style={{ minWidth: 200}}
+                    style={{ minWidth: 200 }}
                   >
                     <Grid item>
                       <Button
@@ -395,7 +437,7 @@ class CampaignCard extends Component {
                   <Grid item>
                     <div className={classes.displayImage}>
                       <img
-                        src={product.image}
+                        src={valuesCampaign.image}
                         alt={product.name}
                         className={classes.productImage}
                       />
@@ -403,24 +445,23 @@ class CampaignCard extends Component {
                   </Grid>
                   <Grid item>
                     <div
-                      style={{
-                        width: "100%",
-                        height: "auto",
-                        justifyContent: "center",
-                        display: "flex",
-                        flexDirection: "row"
-                      }}
+                        style={{
+                          width: "100%",
+                          height: "50px",
+                          justifyContent: "center",
+                          display: "flex"
+                        }}
                     >
                       <input
-                        accept="image/*"
-                        className={classes.input}
-                        id="contained-button-file"
-                        multiple
-                        type="file"
+                          accept="image/*"
+                          className={classes.input}
+                          id={valuesCampaign.id}
+                          type="file"
+                          onChange={this.handleImageChange}
                       />
-                      <label htmlFor="contained-button-file">
-                        <Button autoFocus className={classes.upload}>
-                          Change picture
+                      <label htmlFor={valuesCampaign.id} >
+                        <Button component="span" className={classes.upload}>
+                          Browse
                         </Button>
                       </label>
                     </div>
@@ -461,7 +502,6 @@ class CampaignCard extends Component {
                             type="text"
                             className={classes.textfield}
                             value={valuesCampaign.promo_code}
-                            onChange={this.handleChangeCode}
                           />
                         </Paper>
                       </Grid>
@@ -499,7 +539,6 @@ class CampaignCard extends Component {
                             type="number"
                             className={classes.textfield}
                             value={valuesCampaign.count}
-                            onChange={this.handleChangeNumberOfVouchers}
                           />
                         </Paper>
                       </Grid>
@@ -584,9 +623,10 @@ class CampaignCard extends Component {
                       </Typography>
                     )}
                   </Grid>
-                  {isLoading && !messageError && (
+
+                  {isUpdating && !messageError && (
                     <div className={classes.progressWrapper}>
-                      <CircularProgress />
+                      <CircularProgress className={classes.progress}/>
                     </div>
                   )}
                 </Grid>
@@ -845,7 +885,8 @@ const mapStateToProps = state => {
   return {
     messageError: state.Campaigns.messageError,
     isDeleted: state.Campaigns.isDeleted,
-    isLoading: state.Campaigns.isLoading
+    isLoading: state.Campaigns.isLoading,
+    isUpdating: state.Campaigns.isUpdating
   };
 };
 
@@ -853,6 +894,29 @@ const mapDispatchToProps = dispatch => {
   return {
     doDeleteCampaign: (token, id) => {
       dispatch(deleteCampaignRequest(token, id));
+    },
+    doUpdateCampaign: (
+      name,
+      image,
+      discount,
+      description,
+      start_time,
+      end_time,
+      token,
+      id
+    ) => {
+      dispatch(
+        updateCampaignRequest(
+          name,
+          image,
+          discount,
+          description,
+          start_time,
+          end_time,
+          token,
+          id
+        )
+      );
     }
   };
 };

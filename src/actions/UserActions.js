@@ -40,7 +40,7 @@ export const getInfoRequest = token => async dispatch => {
   }
 };
 
-const doUpdateInfo = (display_name, phone, email, address, avatar, token) => {
+const doUpdateInfo = (display_name, phone, email, address, avatar,location, token) => {
   return axios({
     method: "PATCH",
     url: "https://vouapp-api.herokuapp.com/user/me",
@@ -52,7 +52,8 @@ const doUpdateInfo = (display_name, phone, email, address, avatar, token) => {
       display_name,
       email,
       address,
-      avatar
+      avatar,
+      location
     }
   }).catch(err => {
     return err;
@@ -100,6 +101,7 @@ export const updateInfoRequest = (
       email,
       address,
       avatar,
+      JSON.stringify({latitude: 10.771139, longtitude: 106.681136}),
       token
     ).then(res => {
       if (res.data) {

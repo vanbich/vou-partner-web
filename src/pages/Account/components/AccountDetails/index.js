@@ -125,8 +125,8 @@ function Account(props) {
                   <Grid item>
                     <BootstrapInput
                         id="bootstrap-input"
-                        onChange={event => displayChange(event)}
                         value={display_name}
+                        onChange={event=>{console.log(event);displayChange(event)}}
                     />
                   </Grid>
                 </Grid>

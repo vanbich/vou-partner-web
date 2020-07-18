@@ -112,7 +112,7 @@ class Account extends Component {
     const errors = validate(values, schema);
 
     newState.errors = errors || {};
-    newState.isValid = errors ? false : true;
+    newState.isValid = !errors;
 
     this.setState(newState);
   }, 300);
@@ -218,15 +218,12 @@ class Account extends Component {
     const {
       classes,
       display_name,
-      email,
-      address,
-      phone,
       messageError,
       isSuccess,
       isLoading
     } = this.props;
 
-    const { touched, errors, isValid, avatarPreview } = this.state;
+    const { touched, errors, isValid, avatarPreview, values } = this.state;
 
     const showDisplayError = touched.display_name && errors.display_name;
     const showEmailError = touched.email && errors.email;
@@ -285,18 +282,18 @@ class Account extends Component {
             <Grid container spacing={2}>
               <Grid item lg={8} md={6} xl={8} xs={12}>
                 <AccountDetails
-                  display_name={display_name}
-                  email={email}
-                  address={address}
-                  phone={phone}
+                  display_name={values.display_name}
+                  email={values.email}
+                  address={values.address}
+                  phone={values.phone}
                   showDisplayErr={showDisplayError}
                   showEmailError={showEmailError}
                   showAddressError={showAddressError}
                   showPhoneError={showPhoneError}
                   errors={errors}
-                  displayChange={event => {
-                    this.handleFieldChange("display_name", event.target.value);
-                  }}
+                  displayChange={event =>
+                    this.handleFieldChange("display_name", event.target.value)
+                  }
                   emailChange={event => {
                     this.handleFieldChange("email", event.target.value);
                   }}

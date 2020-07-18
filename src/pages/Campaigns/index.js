@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 // Externals
 import PropTypes from "prop-types";
@@ -117,7 +117,6 @@ const GreenCheckbox = withStyles({
 class Campaign extends Component {
   constructor(props) {
     super(props);
-    this.wrapper = React.createRef();
     this.state = {
       values: {
         name: "",
@@ -160,7 +159,7 @@ class Campaign extends Component {
     };
   }
 
-  getCampaigns = (id) => {
+  getCampaigns = id => {
     const token = cookie.load("token");
     this.props.doGetMyCampaigns(token, id);
     this.props.doGetMyVouchers(token, id);
@@ -194,9 +193,12 @@ class Campaign extends Component {
     this.generateGames();
   }
 
-  shouldComponentUpdate(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean {
-    if(this.props.id!==nextProps.id)
-      this.getCampaigns(nextProps.id);
+  shouldComponentUpdate(
+    nextProps: Readonly<P>,
+    nextState: Readonly<S>,
+    nextContext: any
+  ): boolean {
+    if (this.props.id !== nextProps.id) this.getCampaigns(nextProps.id);
     return true;
   }
 
@@ -451,7 +453,7 @@ class Campaign extends Component {
   };
 
   renderCampaigns() {
-    const { myVouchers, myCampaigns, id } = this.props;
+    const { myVouchers, myCampaigns, id} = this.props;
     const campaigns = this.groupData(myCampaigns, myVouchers);
 
     if (myCampaigns.length === 0 && myVouchers.length === 0) {
@@ -466,13 +468,12 @@ class Campaign extends Component {
       <Grid container spacing={3}>
         {campaigns.map(product => {
           return (
-            <Grid item key={product.id} lg={4} md={4} xs={12}>
-              <Link to="#">
-                <CampaignCard
-                  product={product}
-                  data={() => this.getCampaigns(id)}
-                />
-              </Link>
+            <Grid item lg={4} md={4} xs={12}>
+              <CampaignCard
+                key={product.id}
+                product={product}
+                data={() => this.getCampaigns(id)}
+              />
             </Grid>
           );
         })}
@@ -481,7 +482,13 @@ class Campaign extends Component {
   }
 
   render() {
-    const { classes, isSuccessful, messageError, isLoading, isCreating } = this.props;
+    const {
+      classes,
+      isSuccessful,
+      messageError,
+      isLoading,
+      isCreating
+    } = this.props;
     const {
       values,
       touched,
@@ -536,11 +543,11 @@ class Campaign extends Component {
             </Box>
           </Grid>
         </Grid>
-        <div className={classes.root} ref={this.wrapper}>
+        <div className={classes.root}>
           <CampaignToolbar onNewItem={() => this.handleClickOpen()} />
           {isLoading && (
             <div className={classes.progressWrapper}>
-              <CircularProgress className={classes.progress}/>
+              <CircularProgress className={classes.progress} />
             </div>
           )}
 
@@ -1009,7 +1016,7 @@ class Campaign extends Component {
                     )}
                     {isCreating && !messageError && (
                       <div className={classes.progressWrapper}>
-                        <CircularProgress className={classes.progress}/>
+                        <CircularProgress className={classes.progress} />
                       </div>
                     )}
                   </Grid>
