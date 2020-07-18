@@ -160,8 +160,7 @@ class Campaign extends Component {
     };
   }
 
-  getCampaigns = () => {
-    const { id } = this.props;
+  getCampaigns = (id) => {
     const token = cookie.load("token");
     this.props.doGetMyCampaigns(token, id);
     this.props.doGetMyVouchers(token, id);
@@ -190,8 +189,15 @@ class Campaign extends Component {
   };
 
   componentDidMount() {
-    this.getCampaigns();
+    const { id } = this.props;
+    this.getCampaigns(id);
     this.generateGames();
+  }
+
+  shouldComponentUpdate(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean {
+    if(this.props.id!==nextProps.id)
+      this.getCampaigns(nextProps.id);
+    return true;
   }
 
   generateGames = () => {
@@ -247,11 +253,12 @@ class Campaign extends Component {
   };
 
   handleClose = () => {
+    const { id } = this.props;
     this.setState({
       open: false
     });
     this.handleCreateCampaignFail();
-    this.getCampaigns();
+    this.getCampaigns(id);
   };
 
   handleImageChange = e => {
@@ -444,7 +451,7 @@ class Campaign extends Component {
   };
 
   renderCampaigns() {
-    const { myVouchers, myCampaigns } = this.props;
+    const { myVouchers, myCampaigns, id } = this.props;
     const campaigns = this.groupData(myCampaigns, myVouchers);
 
     if (myCampaigns.length === 0 && myVouchers.length === 0) {
@@ -463,7 +470,7 @@ class Campaign extends Component {
               <Link to="#">
                 <CampaignCard
                   product={product}
-                  data={() => this.getCampaigns()}
+                  data={() => this.getCampaigns(id)}
                 />
               </Link>
             </Grid>
@@ -533,7 +540,7 @@ class Campaign extends Component {
           <CampaignToolbar onNewItem={() => this.handleClickOpen()} />
           {isLoading && (
             <div className={classes.progressWrapper}>
-              <CircularProgress />
+              <CircularProgress className={classes.progress}/>
             </div>
           )}
 
@@ -615,7 +622,7 @@ class Campaign extends Component {
                       />
                       <label htmlFor="contained-button-file">
                         <Button component="span" className={classes.upload}>
-                          Choose image
+                          Browse
                         </Button>
                       </label>
                     </div>
@@ -1002,7 +1009,7 @@ class Campaign extends Component {
                     )}
                     {isCreating && !messageError && (
                       <div className={classes.progressWrapper}>
-                        <CircularProgress />
+                        <CircularProgress className={classes.progress}/>
                       </div>
                     )}
                   </Grid>

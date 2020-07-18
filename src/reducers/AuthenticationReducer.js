@@ -5,7 +5,7 @@ const initState = {
   isRegister: false,
   messageError: null,
   token: null,
-  isLoading: false,
+  isLoading: false
 };
 
 function saveCookies(name, value, exp) {
@@ -30,19 +30,19 @@ const Authentication = (state = initState, action) => {
       state.isLoading = false;
       state.messageError = null;
 
-      saveCookies('token', state.token, 1);
+      saveCookies("token", state.token, 1);
 
       return { ...state };
     }
     case userConstants.LOGIN_FAILURE: {
-      if (
-        action.payload.err.message === "Request failed with status code 401"
-      ) {
+      if (action.payload.err === "Request failed with status code 401") {
         state.messageError = "Incorrect email or password!";
       }
 
-      if (action.payload.err.message === "Network Error") {
+      if (action.payload.err === "Network Error") {
         state.messageError = "Check your connection, please!";
+      } else {
+        state.messageError = action.payload.err;
       }
 
       state.token = null;

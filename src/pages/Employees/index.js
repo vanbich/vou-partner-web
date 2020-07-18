@@ -106,22 +106,13 @@ const BootstrapInput = withStyles(theme => ({
     position: "relative",
     backgroundColor: theme.palette.common.white,
     border: "1px solid #ced4da",
-    fontSize: 16,
+    fontSize: 13,
     width: "auto",
     padding: "10px 12px",
     transition: theme.transitions.create(["border-color", "box-shadow"]),
     // Use the system font instead of the default Roboto font.
     fontFamily: [
-      "-apple-system",
-      "BlinkMacSystemFont",
-      '"Segoe UI"',
       "Roboto",
-      '"Helvetica Neue"',
-      "Arial",
-      "sans-serif",
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"'
     ].join(","),
     "&:focus": {
       boxShadow: `${fade("#9bc3f2", 0.25)} 0 0 0 0.2rem`,
@@ -281,7 +272,7 @@ class EmployeeList extends Component {
     if (isLoading) {
       return (
         <div className={classes.progressWrapper}>
-          <CircularProgress />
+          <CircularProgress className={classes.progress}/>
         </div>
       );
     }
@@ -517,7 +508,7 @@ class EmployeeList extends Component {
                   </Grid>
                   {isCreating && !messageError && (
                     <div className={classes.progressWrapper}>
-                      <CircularProgress />
+                      <CircularProgress className={classes.progress}/>
                     </div>
                   )}
                 </Grid>

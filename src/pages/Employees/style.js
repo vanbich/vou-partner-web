@@ -11,6 +11,9 @@ export default theme => ({
     display: "flex",
     justifyContent: "center"
   },
+  progress:{
+    color: "#9bc3f2",
+  },
   typo: {
     textTransform: "uppercase",
     minWidth: 100,

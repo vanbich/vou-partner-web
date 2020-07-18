@@ -11,6 +11,9 @@ export default theme => ({
     display: "flex",
     justifyContent: "center"
   },
+  progress: {
+   color: "#ffa4a8",
+  },
   pagination: {
     marginTop: "24px",
     display: "flex",

@@ -2,16 +2,37 @@ import userConstants from "../constants";
 
 const initState = {
   myCampaigns: [],
+  number: 0,
   isSuccessful: false,
   messageError: "",
   isLoading: false,
   isCreating: false,
-  isDeleted: false
+  isDeleted: false,
+  statisticData: {
+    labels: [],
+    datasets: [
+      {
+        label: "Total",
+        backgroundColor: "#ffa4a8",
+        data: []
+      }
+    ]
+  }
 };
 
 const Campaigns = (state = initState, action) => {
   switch (action.type) {
     case userConstants.GET_MY_CAMPAIGN_SUCCESS: {
+      state.statisticData = {
+        labels: [],
+        datasets: [
+          {
+            label: "Total",
+            backgroundColor: "#ffa4a8",
+            data: []
+          }
+        ]
+      };
       state.myCampaigns = [...action.payload.res.data];
       for (let i = 0; i < state.myCampaigns.length; i++) {
         state.myCampaigns[i].games = [
@@ -34,10 +55,17 @@ const Campaigns = (state = initState, action) => {
               "Tìm những cặp ảnh giống nhau với số lượt mở ảnh cho trước nếu hết lượt mở ảnh mà chưa mở hết thì thua"
           }
         ];
+        state.statisticData.labels.push(state.myCampaigns[i].name);
+        state.statisticData.datasets[0].data.push(
+          state.myCampaigns[i].num_of_voucher
+        );
       }
+
       state.isLoading = false;
       state.isSuccessful = false;
       state.isDeleted = false;
+      console.log("aaaaaa", action.payload.res.data.length);
+
       return JSON.parse(JSON.stringify(state));
     }
     case userConstants.GET_MY_CAMPAIGN_REQUEST: {

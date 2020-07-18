@@ -75,7 +75,6 @@ class Sidebar extends Component {
                 marginTop: "10px",
                 fontFamily: "Francisco",
                 textAlign: "center",
-                fontWeight: "bold",
                 color: "#ffa8a4"
               }}
             >

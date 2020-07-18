@@ -9,18 +9,16 @@ import _ from "underscore";
 import cookie from "react-cookies";
 
 // Material helpers
-import { withStyles } from "@material-ui/core";
+import { fade, withStyles } from "@material-ui/core";
 
 // Material components
 import {
   Grid,
   Button,
   CircularProgress,
-  TextField,
   Typography,
   Card
 } from "@material-ui/core";
-
 
 // Component styles
 import styles from "./styles";
@@ -31,7 +29,33 @@ import schema from "./schema";
 
 // Service methods
 import { connect } from "react-redux";
-import {clear, loginRequest} from "../../actions/AthenticationActions";
+import { clear, loginRequest } from "../../actions/AthenticationActions";
+import InputBase from "@material-ui/core/InputBase/InputBase";
+import InputLabel from "@material-ui/core/InputLabel/InputLabel";
+
+const BootstrapInput = withStyles(theme => ({
+  root: {
+    "label + &": {
+      marginTop: theme.spacing(3)
+    }
+  },
+  input: {
+    borderRadius: 4,
+    position: "relative",
+    backgroundColor: theme.palette.common.white,
+    border: "1px solid #e0e0e0",
+    fontSize: 13,
+    padding: "10px 12px",
+    width: "35ch",
+    transition: theme.transitions.create(["border-color", "box-shadow"]),
+    // Use the system font instead of the default Roboto font.
+    fontFamily: ["Roboto"].join(","),
+    "&:focus": {
+      boxShadow: `${fade("#ffa8a4", 0.25)} 0 0 0 0.2rem`,
+      borderColor: "#ffa8a4"
+    }
+  }
+}))(InputBase);
 
 class SignIn extends Component {
   state = {
@@ -51,7 +75,7 @@ class SignIn extends Component {
     submitError: null
   };
 
-    validateForm = _.debounce(() => {
+  validateForm = _.debounce(() => {
     const { values } = this.state;
 
     const newState = { ...this.state };
@@ -79,7 +103,6 @@ class SignIn extends Component {
     this.props.doSignIn(values.username, values.password);
   };
 
-
   handleSingInFail = () => {
     this.props.doRefresh();
     this.setState({
@@ -87,150 +110,173 @@ class SignIn extends Component {
       values: {
         username: "",
         password: ""
-      },
+      }
     });
   };
 
   render() {
-    const { classes, messageError, isLoading} = this.props;
-    const {
-      values,
-      touched,
-      errors,
-      isValid,
-    } = this.state;
+    const { classes, messageError, isLoading } = this.props;
+    const { values, touched, errors, isValid } = this.state;
 
-    const token = cookie.load('token');
+    const token = cookie.load("token");
 
     const showEmailError = touched.username && errors.username;
     const showPasswordError = touched.password && errors.password;
 
     if (token) {
-      return (<Redirect to={"/dashboard"}/>)
+      return <Redirect to={"/dashboard"} />;
     }
 
     return (
-        <Card className={classes.root}>
-          <Grid container direction="row" justify="center" alignItems="center">
+      <Card className={classes.root}>
+        <Grid
+          container
+          direction="row"
+          justify="space-around"
+          alignItems="center"
+        >
+          <Grid
+            item
+            xs={6}
+            style={{
+              textAlign: "center",
+              backgroundColor: "rgba(255,169,166,0.56)",
+              paddingTop: "100px",
+              paddingBottom: "100px"
+            }}
+          >
+            <Typography variant="h2" className={classes.subtitle}>
+              I'm glad to see you everyday
+            </Typography>
+            <img alt="sign-in" src="/images/banners/login.png" />
+          </Grid>
+          <Grid
+            item
+            xs={6}
+            style={{
+              textAlign: "center",
+              paddingTop: "50px",
+              paddingBottom: "50px"
+            }}
+          >
             <Grid
-                item
-                lg={6}
-                style={{
-                  textAlign: "center",
-                  backgroundColor: "rgba(255,169,166,0.56)",
-                  paddingTop: "100px",
-                  paddingBottom: "100px"
-                }}
+              container
+              direction="column"
+              justify="center"
+              alignItems="center"
             >
-              <Typography variant="h2" className={classes.subtitle}>
-                I'm glad to see you everyday
-              </Typography>
-              <img alt="sign-in" src="/images/banners/login.png" />
-            </Grid>
-            <Grid
-                item
-                lg={6}
-                style={{
-                  textAlign: "center",
-                  paddingTop: "50px",
-                  paddingBottom: "50px"
-                }}
-            >
-              <Grid
-                  container
-                  direction="column"
-                  justify="center"
-                  alignItems="center"
-              >
-                <Grid item lg={6} className={classes.title}>
-                  <img alt="Vou" src="/images/logos/vou-50px.png" />
-                </Grid>
-                <Grid item lg={6} className={classes.fields}>
-                  <TextField
-                      className={classes.textField}
-                      label="Username"
-                      name="username"
+              <Grid item className={classes.title}>
+                <img alt="Vou" src="/images/logos/vou-50px.png" />
+              </Grid>
+              <Grid item className={classes.fields}>
+                <Grid container direction="column" alignItems="flex-start">
+                  <Grid item>
+                    <InputLabel
+                      shrink
+                      htmlFor="bootstrap-input"
+                      className={classes.typo}
+                    >
+                      USERNAME
+                    </InputLabel>
+                  </Grid>
+                  <Grid item>
+                    <BootstrapInput
+                      id="bootstrap-input"
                       onChange={event =>
-                          this.handleFieldChange("username", event.target.value)
+                        this.handleFieldChange("username", event.target.value)
                       }
-                      type="text"
                       value={values.username}
-                      variant="outlined"
-                  />
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item lg={6} className={classes.fields}>
-                  {showEmailError && (
-                      <Typography className={classes.fieldError} variant="body2">
-                        {errors.username[0]}
-                      </Typography>
-                  )}
-                </Grid>
-                <Grid item lg={6} className={classes.fields}>
-                  <TextField
-                      className={classes.textField}
-                      label="Password"
-                      name="password"
-                      onChange={event =>
-                          this.handleFieldChange("password", event.target.value)
-                      }
-                      type="password"
-                      value={values.password}
-                      variant="outlined"
-                  />
-                </Grid>
-                <Grid item lg={6} className={classes.fields}>
-                  {showPasswordError && (
-                      <Typography className={classes.fieldError} variant="body2">
-                        {errors.password[0]}
-                      </Typography>
-                  )}
-                </Grid>
-                {messageError && (
-                    <Typography className={classes.submitError} variant="body2">
-                      {messageError}
-                    </Typography>
-                )}
-                <Grid item lg={6} className={classes.forgot}>
-                  <Link className={classes.forgot} to="/">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item lg={6} className={classes.fields}>
-                  {isLoading && !messageError ? (
-                      <CircularProgress className={classes.progress} />
-                  ) : messageError ? (
-                      <Button
-                          className={classes.signInButton}
-                          onClick={this.handleSingInFail}
-                          size="large"
-                          variant="contained"
-                      >
-                        Try again
-                      </Button>
-                  ) : (
-                      <Button
-                          className={classes.signInButton}
-                          disabled={!isValid}
-                          onClick={this.handleSignIn}
-                          size="large"
-                          variant="contained"
-                      >
-                        Sign In
-                      </Button>
-                  )}
-                </Grid>
-                <Grid item lg={6} className={classes.fields}>
-                  <Typography className={classes.signUp} variant="body1">
-                    Don't have an account?{" "}
-                    <Link className={classes.signUpUrl} to="/sign-up" onClick={()=>this.props.doRefresh()}>
-                      Sign up
-                    </Link>
+              </Grid>
+              <Grid item className={classes.fields}>
+                {showEmailError && (
+                  <Typography className={classes.fieldError} variant="body2">
+                    {errors.username[0]}
                   </Typography>
+                )}
+              </Grid>
+              <Grid item className={classes.fields}>
+                <Grid container direction="column" alignItems="flex-start">
+                  <Grid item>
+                    <InputLabel
+                      shrink
+                      htmlFor="bootstrap-input"
+                      className={classes.typo}
+                    >
+                      PASSWORD
+                    </InputLabel>
+                  </Grid>
+                  <Grid item>
+                    <BootstrapInput
+                      id="bootstrap-input"
+                      type="password"
+                      onChange={event =>
+                        this.handleFieldChange("password", event.target.value)
+                      }
+                      value={values.password}
+                    />
+                  </Grid>
                 </Grid>
+              </Grid>
+              <Grid item className={classes.fields}>
+                {showPasswordError && (
+                  <Typography className={classes.fieldError} variant="body2">
+                    {errors.password[0]}
+                  </Typography>
+                )}
+              </Grid>
+              {messageError && (
+                <Typography className={classes.submitError} variant="body2">
+                  {messageError}
+                </Typography>
+              )}
+              <Grid item className={classes.fields}>
+                {isLoading && !messageError ? (
+                  <CircularProgress className={classes.progress} />
+                ) : messageError ? (
+                  <Button
+                    className={classes.signInButton}
+                    onClick={this.handleSingInFail}
+                    size="large"
+                    variant="contained"
+                  >
+                    Try again
+                  </Button>
+                ) : (
+                  <Button
+                    className={classes.signInButton}
+                    disabled={!isValid}
+                    onClick={this.handleSignIn}
+                    size="large"
+                    variant="contained"
+                  >
+                    Sign In
+                  </Button>
+                )}
+              </Grid>
+              <Grid item className={classes.forgotContainer}>
+                <Link className={classes.forgot} to="/">
+                  Forgot password?
+                </Link>
+              </Grid>
+              <Grid item className={classes.fields}>
+                <Typography className={classes.signUp} variant="body1">
+                  Don't have an account?{" "}
+                  <Link
+                    className={classes.signUpUrl}
+                    to="/sign-up"
+                    onClick={() => this.props.doRefresh()}
+                  >
+                    Sign up
+                  </Link>
+                </Typography>
               </Grid>
             </Grid>
           </Grid>
-        </Card>
+        </Grid>
+      </Card>
     );
   }
 }
@@ -244,18 +290,18 @@ SignIn.propTypes = {
 const mapStateToProps = state => {
   return {
     messageError: state.Authentication.messageError,
-    isLoading: state.Authentication.isLoading,
+    isLoading: state.Authentication.isLoading
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    doSignIn: (email, password) => {
-      dispatch(loginRequest(email, password));
+    doSignIn: (username, password) => {
+      dispatch(loginRequest(username, password));
     },
     doRefresh: () => {
       dispatch(clear());
-    },
+    }
   };
 };
 export default connect(

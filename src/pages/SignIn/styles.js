@@ -82,7 +82,6 @@ export default theme => ({
   },
   title: {
     marginBottom: theme.spacing(5),
-    marginLeft: theme.spacing(2),
   },
   subtitle: {
     color: "#ffffff",
@@ -123,15 +122,15 @@ export default theme => ({
     display: "block",
     marginTop: theme.spacing(2),
     marginLeft: "auto",
-    marginRight: "auto"
+    marginRight: "auto",
+    color: "#ffa8a4"
   },
   signInButton: {
     marginTop: theme.spacing(2),
-    marginLeft: theme.spacing(2),
     backgroundColor: "#ffa8a4",
     color: "#ffffff",
     width: "30ch",
-    borderRadius: "50px",
+    borderRadius: 50,
     '&:hover': {
       backgroundColor: "#ffa8a4",
       color: "#ffffff",
@@ -139,14 +138,13 @@ export default theme => ({
   },
   signUp: {
     marginTop: theme.spacing(2),
-    marginLeft: theme.spacing(5),
     color: theme.palette.text.secondary
   },
   signUpUrl: {
-    color: theme.palette.primary.main,
+    color: "#ffa8a4",
     fontWeight: "bold",
     "&:hover": {
-      color: theme.palette.primary.main
+      color: "#ffa8a4"
     }
   },
   fieldError: {
@@ -160,9 +158,11 @@ export default theme => ({
     textAlign: 'center',
     fontWeight: 'bold'
   },
+  forgotContainer: {
+    marginTop: theme.spacing(4),
+  },
   forgot: {
-    marginTop: theme.spacing(2),
-    marginLeft: theme.spacing(10),
     color: "#299ebf",
+    fontSize: 13,
   }
 });

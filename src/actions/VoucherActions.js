@@ -1,8 +1,8 @@
 import axios from "axios";
 import userConstants from "../constants";
 
-const doGetMyVouchers = (token) => {
-  const res = axios({
+const doGetMyVouchers = async (token) => {
+  const res = await axios({
     method: "GET",
     url: "https://vouapp-api.herokuapp.com/partner/voucher/me",
     headers: {

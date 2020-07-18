@@ -58,7 +58,8 @@ const styles = theme => ({
     display: "block",
     marginTop: theme.spacing(2),
     marginLeft: "auto",
-    marginRight: "auto"
+    marginRight: "auto",
+    color: "#ffa8a4",
   },
   submitError: {
     color: theme.palette.danger.main,

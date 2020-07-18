@@ -5,6 +5,7 @@ import Vouchers from "./VoucherReducer";
 import Campaigns from "./CampaignReducer";
 import Games from "./GameReducer";
 import Employees from "./EmployeeReducer";
+import Statistics from "./StatisticsReducer";
 
 const rootReducer = combineReducers({
     Authentication,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
     Vouchers,
     Campaigns,
     Games,
-    Employees
+    Employees,
+    Statistics
 });
 export default rootReducer;

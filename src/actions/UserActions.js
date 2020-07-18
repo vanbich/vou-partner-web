@@ -1,18 +1,6 @@
 import axios from "axios";
 import userConstants from "../constants";
 
-const doGetInfo = token => {
-  const res = axios({
-    method: "GET",
-    url: "https://vouapp-api.herokuapp.com/user/me",
-    headers: {
-      token: `JWT ${token}`
-    }
-  }).catch(err => {
-    return err;
-  });
-  return res;
-};
 
 const getInfoActionSuccess = res => {
   return {
@@ -32,21 +20,28 @@ const getInfoActionFailure = err => {
   };
 };
 
-export const getInfoRequest = token => {
-  return dispatch => {
-    return doGetInfo(token).then(res => {
-      if (res.data) {
-        console.log("getInfo", res);
-        dispatch(getInfoActionSuccess(res));
-      } else {
-        dispatch(getInfoActionFailure(res));
+
+
+export const getInfoRequest = token => async dispatch => {
+  try {
+    const res = await axios({
+      method: "GET",
+      url: "https://vouapp-api.herokuapp.com/user/me",
+      headers: {
+        token: `JWT ${token}`
       }
     });
-  };
+
+
+    console.log("getInfo", res);
+    dispatch(getInfoActionSuccess(res));
+  } catch (err) {
+    dispatch(getInfoActionFailure(err));
+  }
 };
 
 const doUpdateInfo = (display_name, phone, email, address, avatar, token) => {
-  const res = axios({
+  return axios({
     method: "PATCH",
     url: "https://vouapp-api.herokuapp.com/user/me",
     headers: {
@@ -62,7 +57,6 @@ const doUpdateInfo = (display_name, phone, email, address, avatar, token) => {
   }).catch(err => {
     return err;
   });
-  return res;
 };
 
 const updateInfoActionSuccess = res => {

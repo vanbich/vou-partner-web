@@ -1,8 +1,11 @@
 import React from "react";
 
 // Material components
-import { TextField, Typography } from "@material-ui/core";
+import {fade, Typography, withStyles} from "@material-ui/core";
 import FaceIcon from "@material-ui/icons/Face";
+import InputBase from "@material-ui/core/InputBase/InputBase";
+import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@material-ui/styles";
 
 // Shared components
 import {
@@ -11,10 +14,7 @@ import {
   PortletLabel,
   PortletContent,
 } from "../../../../components";
-
-// Component styles
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/styles";
+import InputLabel from "@material-ui/core/InputLabel/InputLabel";
 
 const useStyle = makeStyles(them => ({
   root: {},
@@ -34,8 +34,37 @@ const useStyle = makeStyles(them => ({
   },
   fieldError: {
     color: them.palette.danger.main
-  }
+  },
+  typo: {
+    textTransform: "uppercase",
+  },
 }));
+
+const BootstrapInput = withStyles(theme => ({
+  root: {
+    "label + &": {
+      marginTop: theme.spacing(3)
+    }
+  },
+  input: {
+    borderRadius: 4,
+    position: "relative",
+    backgroundColor: theme.palette.common.white,
+    border: "1px solid #ced4da",
+    fontSize: 13,
+    width: "auto",
+    padding: "10px 12px",
+    transition: theme.transitions.create(["border-color", "box-shadow"]),
+    // Use the system font instead of the default Roboto font.
+    fontFamily: [
+      "Roboto",
+    ].join(","),
+    "&:focus": {
+      boxShadow: `${fade("#9bc3f2", 0.25)} 0 0 0 0.2rem`,
+      borderColor: theme.palette.primary.main
+    }
+  }
+}))(InputBase);
 
 function Account(props) {
   const classes = useStyle();
@@ -79,13 +108,29 @@ function Account(props) {
               alignItems="center"
             >
               <Grid item xs={4}>
-                <TextField
-                  className={classes.textField}
-                  label="Display name"
-                  defaultValue={display_name}
-                  variant="outlined"
-                  onChange={event => displayChange(event)}
-                />
+                <Grid
+                    container
+                    direction="column"
+                    alignItems="flex-start"
+                >
+                  <Grid item>
+                    <InputLabel
+                        shrink
+                        htmlFor="bootstrap-input"
+                        className={classes.typo}
+                    >
+                      NAME
+                    </InputLabel>
+                  </Grid>
+                  <Grid item>
+                    <BootstrapInput
+                        id="bootstrap-input"
+                        onChange={event => displayChange(event)}
+                        value={display_name}
+                    />
+                  </Grid>
+                </Grid>
+
                 {showDisplayErr && (
                   <Typography className={classes.fieldError} variant="body2">
                     {errors.display_name[0]}
@@ -93,13 +138,28 @@ function Account(props) {
                 )}
               </Grid>
               <Grid item xs={4}>
-                <TextField
-                  className={classes.textField}
-                  label="Email Address"
-                  defaultValue={email}
-                  variant="outlined"
-                  onChange={event => emailChange(event)}
-                />
+                <Grid
+                    container
+                    direction="column"
+                    alignItems="flex-start"
+                >
+                  <Grid item>
+                    <InputLabel
+                        shrink
+                        htmlFor="bootstrap-input"
+                        className={classes.typo}
+                    >
+                      EMAIL
+                    </InputLabel>
+                  </Grid>
+                  <Grid item>
+                    <BootstrapInput
+                        id="bootstrap-input"
+                        onChange={event => emailChange(event)}
+                        value={email}
+                    />
+                  </Grid>
+                </Grid>
                 {showEmailError && (
                   <Typography className={classes.fieldError} variant="body2">
                     {errors.email[0]}
@@ -116,13 +176,28 @@ function Account(props) {
               alignItems="center"
             >
               <Grid item xs={4}>
-                <TextField
-                  className={classes.textField}
-                  label="Address"
-                  defaultValue={address}
-                  variant="outlined"
-                  onChange={event => addressChange(event)}
-                />
+                <Grid
+                    container
+                    direction="column"
+                    alignItems="flex-start"
+                >
+                  <Grid item>
+                    <InputLabel
+                        shrink
+                        htmlFor="bootstrap-input"
+                        className={classes.typo}
+                    >
+                      ADDRESS
+                    </InputLabel>
+                  </Grid>
+                  <Grid item>
+                    <BootstrapInput
+                        id="bootstrap-input"
+                        onChange={event => addressChange(event)}
+                        value={address}
+                    />
+                  </Grid>
+                </Grid>
                 {showAddressError && (
                   <Typography className={classes.fieldError} variant="body2">
                     {errors.address[0]}
@@ -131,13 +206,28 @@ function Account(props) {
               </Grid>
 
               <Grid item xs={4}>
-                <TextField
-                  className={classes.textField}
-                  label="Phone Number"
-                  defaultValue={phone}
-                  variant="outlined"
-                  onChange={event => phoneChange(event)}
-                />
+                <Grid
+                    container
+                    direction="column"
+                    alignItems="flex-start"
+                >
+                  <Grid item>
+                    <InputLabel
+                        shrink
+                        htmlFor="bootstrap-input"
+                        className={classes.typo}
+                    >
+                      PHONE
+                    </InputLabel>
+                  </Grid>
+                  <Grid item>
+                    <BootstrapInput
+                        id="bootstrap-input"
+                        onChange={event => phoneChange(event)}
+                        value={phone}
+                    />
+                  </Grid>
+                </Grid>
                 {showPhoneError && (
                   <Typography className={classes.fieldError} variant="body2">
                     {errors.phone[0]}
