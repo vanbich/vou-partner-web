@@ -31,10 +31,6 @@ import Card from "@material-ui/core/Card";
 import Checkbox from "@material-ui/core/Checkbox";
 
 // Material icons
-import {
-  ChevronRight as ChevronRightIcon,
-  ChevronLeft as ChevronLeftIcon
-} from "@material-ui/icons";
 import CloseIcon from "@material-ui/icons/Close";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
@@ -145,7 +141,7 @@ class Campaign extends Component {
       limit: 6,
       productsTotal: 0,
       isValid: false,
-      imagePreview: "",
+      imagePreview: null,
       imageCampaign:
         "https://cache.redgiant.com/wp-assets/2019/07/Summer19-Sale-Teaser-Blog.jpg",
       start_time: new Date(),
@@ -181,9 +177,6 @@ class Campaign extends Component {
         data[i].voucher = null;
       }
     }
-
-    console.log("data", data);
-
     return JSON.parse(JSON.stringify(data));
   };
 
@@ -257,7 +250,8 @@ class Campaign extends Component {
   handleClose = () => {
     const { id } = this.props;
     this.setState({
-      open: false
+      open: false,
+      imagePreview: null
     });
     this.handleCreateCampaignFail();
     this.getCampaigns(id);
@@ -336,7 +330,6 @@ class Campaign extends Component {
     this.setState({
       gamesChoose: [...gamesChoose]
     });
-    console.log("gamesChoose", gamesChoose);
   };
 
   handleChangeGamePoint = (e, id) => {
@@ -347,7 +340,6 @@ class Campaign extends Component {
     this.setState({
       gamesChoose: [...gamesChoose]
     });
-    console.log("gamesChoose2", gamesChoose);
   };
 
   dateToString = date => {
@@ -379,11 +371,9 @@ class Campaign extends Component {
       "state_changed",
       snapShot => {
         //takes a snap shot of the process as it is happening
-        console.log(snapShot);
       },
       err => {
         //catches the errors
-        console.log("abcnd");
 
         this.setState({
           isUploadImg: err
@@ -395,23 +385,6 @@ class Campaign extends Component {
           .child(imageCampaign.name)
           .getDownloadURL()
           .then(fireBaseUrl => {
-            console.log("url", fireBaseUrl);
-            console.log(
-              "doCreateCampaign",
-              values.name,
-              fireBaseUrl,
-              id,
-              values.discount,
-              values.num_of_voucher,
-              values.promo_code,
-              "url",
-              values.description,
-              this.dateToString(start_time),
-              this.dateToString(end_time),
-              campaignGames,
-              token
-            );
-
             this.props.doCreateCampaign(
               values.name,
               fireBaseUrl,
@@ -441,8 +414,7 @@ class Campaign extends Component {
         num_of_voucher: 0,
         discount: 0
       },
-      imageCampaign:
-        "https://cache.redgiant.com/wp-assets/2019/07/Summer19-Sale-Teaser-Blog.jpg",
+      imageCampaign: null,
       start_time: new Date(),
       end_time: new Date(),
       imagePreview: null,
@@ -453,13 +425,13 @@ class Campaign extends Component {
   };
 
   renderCampaigns() {
-    const { myVouchers, myCampaigns, id} = this.props;
+    const { myVouchers, myCampaigns, id , isLoading} = this.props;
     const campaigns = this.groupData(myCampaigns, myVouchers);
 
-    if (myCampaigns.length === 0 && myVouchers.length === 0) {
+    if (!isLoading && myCampaigns.length === 0 && myVouchers.length === 0) {
       return (
         <Typography variant="h6" style={{ textAlign: "center" }}>
-          There are no products available
+          There are no campaigns available
         </Typography>
       );
     }
@@ -518,28 +490,42 @@ class Campaign extends Component {
     const showEndtimeError = errors.end_time;
 
     return (
-      <DashboardLayout title="Campaign">
+      <DashboardLayout title="Campaigns">
         <Grid
           container
           direction="row"
-          justify="center"
+          justify="space-around"
           alignItems="center"
-          style={{ backgroundColor: "#ffa4a8" }}
+          style={{
+            backgroundColor: "#ffa4a8",
+            marginBottom: "1%",
+            maxHeight: 350,
+            height: "100%"
+          }}
         >
-          <Grid item lg={5} md={6} xl={5} xs={12}>
+          <Grid item>
             <Typography
+              variant="h2"
               style={{
                 fontFamily: "Pacifico",
-                fontSize: "30px",
                 color: "white"
               }}
             >
               More vouchers, More benefits
             </Typography>
           </Grid>
-          <Grid item lg={6} md={6} xl={6} xs={12}>
-            <Box display="flex" justifyContent="center" m={1} p={1}>
-              <img alt="Brainalytica logo" src="/images/banners/campaign.png" />
+          <Grid item>
+            <Box display="flex" justifyContent="center">
+              <img
+                alt="Campaigns banner"
+                src="/images/banners/campaign.png"
+                style={{
+                  maxHeight: "80%",
+                  maxWidth: "80%",
+                  minWidth: "20%",
+                  minHeight: "20%"
+                }}
+              />
             </Box>
           </Grid>
         </Grid>
@@ -552,15 +538,6 @@ class Campaign extends Component {
           )}
 
           <div className={classes.content}>{this.renderCampaigns()}</div>
-          <div className={classes.pagination}>
-            <Typography variant="caption">1-6 of 20</Typography>
-            <IconButton>
-              <ChevronLeftIcon />
-            </IconButton>
-            <IconButton>
-              <ChevronRightIcon />
-            </IconButton>
-          </div>
         </div>
         <Dialog
           fullWidth
@@ -598,16 +575,20 @@ class Campaign extends Component {
                 >
                   <Grid item>
                     <Typography className={classes.titlePart}>
-                      Choose image campaign
+                      Image campaign
                     </Typography>
                   </Grid>
                   <Grid item>
                     <div className={classes.displayImage}>
-                      <img
-                        src={imagePreview}
-                        alt={"Campaign"}
-                        className={classes.productImage}
-                      />
+                      {!imagePreview ? (
+                        <Typography>400 x 200</Typography>
+                      ) : (
+                        <img
+                          src={imagePreview}
+                          alt={"Campaign"}
+                          className={classes.productImage}
+                        />
+                      )}
                     </div>
                   </Grid>
                   <Grid item>
@@ -639,7 +620,7 @@ class Campaign extends Component {
               <DialogActions>
                 <Button
                   autoFocus
-                  disabled={imagePreview === ""}
+                  disabled={!imagePreview}
                   onClick={this.showPart2}
                   className={classes.button}
                 >

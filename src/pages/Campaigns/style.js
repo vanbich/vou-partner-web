@@ -81,22 +81,24 @@ export default theme => ({
     fontSize: 12
   },
   productImage: {
-    maxWidth: "50%",
-    maxHeight: "50%",
+    maxWidth: "100%",
+    maxHeight: "100%",
     borderRadius: "2%"
   },
   displayImage: {
     maxHeight: "50%",
-    maxWidth: "80%",
-    minWidth: 400,
-    minHeight: 100,
-    display: "flex",
+    maxWidth: "60%",
+    minWidth: 300,
+    minHeight: 150,
     margin: "0 auto",
-    justifyContent: "center",
     padding: theme.spacing(2),
     border: "1px dashed #ffa4a8",
     borderRadius: "2%",
-    objectFit: "scale-down"
+    objectFit: "scale-down",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
   },
   logoWrapper: {
     height: 50,

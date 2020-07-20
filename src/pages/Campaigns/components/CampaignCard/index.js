@@ -28,6 +28,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import SportsEsportsIcon from "@material-ui/icons/SportsEsports";
 import ConfirmationNumberIcon from "@material-ui/icons/ConfirmationNumber";
 import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 // Component styles
 import styles from "./styles";
@@ -35,6 +36,7 @@ import styles from "./styles";
 // Service method
 import { connect } from "react-redux";
 import {
+  clear,
   deleteCampaignRequest,
   updateCampaignRequest
 } from "../../../../actions/CampaignActions";
@@ -112,7 +114,6 @@ class CampaignCard extends Component {
 
   componentDidMount() {
     const { product } = this.props;
-    console.log("product", product);
 
     this.setState({
       imageCampaign: product.image,
@@ -162,6 +163,7 @@ class CampaignCard extends Component {
   };
 
   handleClose = () => {
+    this.props.clear();
     this.setState({
       openCampaign: false
     });
@@ -227,50 +229,45 @@ class CampaignCard extends Component {
   handleSaveChangeCampaign = () => {
     const { valuesCampaign, imageCampaign } = this.state;
     const token = cookie.load("token");
-    console.log(
-      "valuesCampaign",
-      valuesCampaign.name,
-      imageCampaign,
-      valuesCampaign.discount,
-      valuesCampaign.description,
-      this.dateToString(valuesCampaign.start_time),
-      this.dateToString(valuesCampaign.end_time),
-      token,
-      valuesCampaign.id
-    );
 
     const uploadTask = storage
-        .ref(`${valuesCampaign.id}/campaigns/${imageCampaign.name}`)
-        .put(imageCampaign);
+      .ref(`${valuesCampaign.id}/campaigns/${imageCampaign.name}`)
+      .put(imageCampaign);
 
     uploadTask.on(
-        "state_changed",
-        snapShot => {
-          //takes a snap shot of the process as it is happening
-          console.log(snapShot);
-        },
-        err => {
-          this.setState({
-            imageCampaign: err
+      "state_changed",
+      snapShot => {
+        //takes a snap shot of the process as it is happening
+      },
+      err => {
+        this.setState({
+          imageCampaign: err
+        });
+      },
+      () => {
+        storage
+          .ref(`${valuesCampaign.id}/campaigns/`)
+          .child(imageCampaign.name)
+          .getDownloadURL()
+          .then(fireBaseUrl => {
+            this.props.doUpdateCampaign(
+              valuesCampaign.name,
+              fireBaseUrl,
+              valuesCampaign.discount,
+              valuesCampaign.description,
+              this.dateToString(valuesCampaign.start_time),
+              this.dateToString(valuesCampaign.end_time),
+              token,
+              valuesCampaign.id
+            );
           });
-        },
-        () => {
-          storage
-              .ref(`${valuesCampaign.id}/campaigns/`)
-              .child(imageCampaign.name)
-              .getDownloadURL()
-              .then(fireBaseUrl => {
-                console.log("url", fireBaseUrl);
-                this.props.doUpdateCampaign(valuesCampaign.name, fireBaseUrl,valuesCampaign.discount, valuesCampaign.description, this.dateToString(valuesCampaign.start_time),this.dateToString(valuesCampaign.end_time),token,valuesCampaign.id);
-              });
-        }
+      }
     );
   };
 
   handleDeleteCampaign = () => {
     const { valuesCampaign } = this.state;
     const token = cookie.load("token");
-    console.log("delete", token, valuesCampaign.id);
 
     this.props.doDeleteCampaign(token, valuesCampaign.id);
   };
@@ -296,7 +293,14 @@ class CampaignCard extends Component {
   };
 
   render() {
-    const { classes, product, messageError,  isDeleted,isUpdating } = this.props;
+    const {
+      classes,
+      product,
+      messageError,
+      isDeleted,
+      isUpdating,
+      isSuccessful
+    } = this.props;
 
     const { valuesCampaign, remind } = this.state;
 
@@ -445,21 +449,21 @@ class CampaignCard extends Component {
                   </Grid>
                   <Grid item>
                     <div
-                        style={{
-                          width: "100%",
-                          height: "50px",
-                          justifyContent: "center",
-                          display: "flex"
-                        }}
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        justifyContent: "center",
+                        display: "flex"
+                      }}
                     >
                       <input
-                          accept="image/*"
-                          className={classes.input}
-                          id={valuesCampaign.id}
-                          type="file"
-                          onChange={this.handleImageChange}
+                        accept="image/*"
+                        className={classes.input}
+                        id={valuesCampaign.id}
+                        type="file"
+                        onChange={this.handleImageChange}
                       />
-                      <label htmlFor={valuesCampaign.id} >
+                      <label htmlFor={valuesCampaign.id}>
                         <Button component="span" className={classes.upload}>
                           Browse
                         </Button>
@@ -617,16 +621,91 @@ class CampaignCard extends Component {
                     </Paper>
                   </Grid>
                   <Grid item>
+                    <Grid
+                      container
+                      direction="row"
+                      justify="space-around"
+                      alignItems="center"
+                    >
+                      {valuesCampaign.games.map((game, index) => {
+                        return (
+                          <Card
+                            key={index}
+                            variant="outlined"
+                            className={classes.cardGame}
+                          >
+                            <Grid
+                              container
+                              direction="column"
+                              justify="space-around"
+                              alignItems="center"
+                              spacing={2}
+                            >
+                              <Grid item>
+                                <Typography
+                                  variant="h6"
+                                  className={classes.gameTitle}
+                                >
+                                  {game.name}
+                                </Typography>
+                              </Grid>
+
+                              <Grid item>
+                                <div className={classes.logoWrapper}>
+                                  <img
+                                    alt="icon game"
+                                    src={game.logo}
+                                    className={classes.logo}
+                                  />
+                                </div>
+                              </Grid>
+
+                              <Grid item>
+                                <Paper
+                                  component="form"
+                                  className={classes.paper}
+                                  variant="outlined"
+                                >
+                                  <InputBase
+                                    className={classes.textfield}
+                                    type="number"
+                                    value={game.accept_point}
+                                    placeholder="Minimum point"
+                                  />
+                                  <Typography className={classes.point}>
+                                    /{game.point} points
+                                  </Typography>
+                                </Paper>
+                              </Grid>
+                            </Grid>
+                          </Card>
+                        );
+                      })}
+                    </Grid>
+                  </Grid>
+                  <Grid item>
                     {messageError && (
                       <Typography className={classes.fieldError}>
                         {messageError}
                       </Typography>
                     )}
                   </Grid>
-
+                  {isSuccessful ? (
+                    <Grid
+                      container
+                      direction="row"
+                      justify="center"
+                      alignItems="center"
+                    >
+                      <CheckCircleIcon className={classes.iconSuccess} />
+                      <Typography className={classes.successContent}>
+                        Update successful
+                      </Typography>
+                    </Grid>
+                  ) : null}
                   {isUpdating && !messageError && (
                     <div className={classes.progressWrapper}>
-                      <CircularProgress className={classes.progress}/>
+                      <CircularProgress className={classes.progress} />
                     </div>
                   )}
                 </Grid>
@@ -886,7 +965,8 @@ const mapStateToProps = state => {
     messageError: state.Campaigns.messageError,
     isDeleted: state.Campaigns.isDeleted,
     isLoading: state.Campaigns.isLoading,
-    isUpdating: state.Campaigns.isUpdating
+    isUpdating: state.Campaigns.isUpdating,
+    isSuccessful: state.Campaigns.isSuccessful
   };
 };
 
@@ -917,6 +997,9 @@ const mapDispatchToProps = dispatch => {
           id
         )
       );
+    },
+    clear: () => {
+      dispatch(clear());
     }
   };
 };

@@ -48,8 +48,6 @@ const Authentication = (state = initState, action) => {
       state.token = null;
       state.isLoading = false;
 
-      console.log("err", state.messageError);
-
       return { ...state };
     }
 

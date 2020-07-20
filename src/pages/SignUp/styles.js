@@ -13,19 +13,6 @@ export default theme => ({
   grid: {
     height: "100%"
   },
-  quoteWrapper: {
-    [theme.breakpoints.down("md")]: {
-      display: "none"
-    }
-  },
-  name: {
-    marginTop: theme.spacing(3),
-    color: theme.palette.common.white
-  },
-  bio: {
-    color: theme.palette.common.white
-  },
-
   title: {
     marginBottom: theme.spacing(5)
   },

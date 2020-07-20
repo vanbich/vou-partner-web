@@ -182,7 +182,7 @@ class VouchersChart extends Component {
                 <Typography
                   style={{
                     fontSize: 14,
-                    color: "#999999",
+                    color: "rgba(155,155,155,1)",
                     textAlign: "center",
                     alignSelf: "center"
                   }}

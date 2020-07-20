@@ -42,15 +42,7 @@ class Voucher extends Component {
             <ConfirmationNumberIcon className={classes.icon} />
           </div>
         </div>
-        <div className={classes.footer}>
-          <Typography className={classes.difference} variant="body2">
-            <ArrowDownwardIcon />
-            12%
-          </Typography>
-          <Typography className={classes.caption} variant="caption">
-            Since last month
-          </Typography>
-        </div>
+        <div className={classes.footer}/>
       </Paper>
     );
   }

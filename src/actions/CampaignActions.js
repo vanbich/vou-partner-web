@@ -14,21 +14,6 @@ const doCreateCampaign = (
   end_time,
   token
 ) => {
-  console.log(
-    "doCreateCampaign",
-    name,
-    image,
-    partner_id,
-    discount,
-    num_of_voucher,
-    promo_code,
-    voucher_image,
-    description,
-    start_time,
-    end_time,
-    token
-  );
-
   const res = axios({
     method: "POST",
     url: "https://vouapp-api.herokuapp.com/partner/campaign",
@@ -50,8 +35,6 @@ const doCreateCampaign = (
   }).catch(err => {
     return err;
   });
-  console.log("createCampaignAction", res.message);
-
   return res;
 };
 
@@ -109,7 +92,6 @@ export const createCampaignRequest = (
       token
     ).then(res => {
       if (res.data) {
-        console.log("createCampaignAction", res);
         dispatch(createCampaignActionSuccess(res));
       } else {
         dispatch(createCampaignActionFailure(res));
@@ -154,7 +136,6 @@ export const getAllCampaignsRequest = (token, id) => async dispatch => {
       }
     });
 
-    console.log("getAllCampaigns", res);
     dispatch(getAllCampaignsActionSuccess(res));
   } catch (err) {
     dispatch(getAllCampaignsActionFailure(err));
@@ -203,7 +184,6 @@ export const deleteCampaignRequest = (token, id) => {
     dispatch(deleteCampaignActionRequest());
     return doDeleteCampaign(token, id).then(res => {
       if (res.data) {
-        console.log("delete campaign", res);
         dispatch(deleteCampaignActionSuccess(res));
       } else {
         dispatch(deleteCampaignActionFailure(res));
@@ -261,7 +241,6 @@ export const updateCampaignRequest = (
       }
     });
 
-    console.log("updateCampaign", res);
     dispatch(updateCampaignActionSuccess());
   } catch (err) {
     dispatch(updateCampaignActionFailure(err));

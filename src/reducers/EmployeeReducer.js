@@ -18,7 +18,6 @@ const Employees = (state = initState, action) => {
       state.isLoading = false;
       state.isSuccessful = false;
       state.isDeleted = false;
-      console.log("myEmployees", state.myEmployees);
       return JSON.parse(JSON.stringify(state));
     }
     case userConstants.GET_EMPLOYEES_REQUEST: {

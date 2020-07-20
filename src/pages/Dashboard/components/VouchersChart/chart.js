@@ -1,24 +1,6 @@
 // Palette
 import palette from '../../../../theme/palette';
 
-// Chart data
-export const data = {
-  labels: ['1 Aug', '2 Aug', '3 Aug', '4 Aug', '5 Aug', '6 Aug','1 Aug', '2 Aug', '3 Aug', '4 Aug', '5 Aug', '6 Aug','1 Aug', '2 Aug', '3 Aug', '4 Aug', '5 Aug', '6 Aug'],
-  datasets: [
-    {
-      label: 'Deliver',
-      backgroundColor: "orange",
-      data: [18, 5, 19, 27, 29, 19, 20,18, 5, 19, 27, 29, 19, 20,18, 5, 19, 27, 29, 19, 20]
-    },
-    {
-      label: 'Used',
-      backgroundColor: "green",
-      data: [18, 5, 19, 27, 29, 19, 20,18, 5, 19, 27, 29, 19, 20,18, 5, 19, 27, 29, 19, 20]
-    },
-
-  ]
-};
-
 // Chart options
 export const options = {
   responsive: true,

@@ -131,11 +131,6 @@ class SignUp extends Component {
     const { classes, isRegister, messageError, isLoading } = this.props;
     const { values, touched, errors, isValid } = this.state;
 
-    // const showFirstNameError =
-    //   touched.firstName && errors.firstName ? errors.firstName[0] : false;
-    // const showLastNameError =
-    //   touched.lastName && errors.lastName ? errors.lastName[0] : false;
-
     const showEmailError =
       touched.username && errors.username ? errors.username[0] : false;
     const showPasswordError =
@@ -161,7 +156,16 @@ class SignUp extends Component {
             <Typography variant="h2" className={classes.subtitle}>
               Let's become my partner!
             </Typography>
-            <img alt="sign-in" src="/images/banners/register.png" />
+            <img
+              alt="sign-in"
+              src="/images/banners/register.png"
+              style={{
+                maxHeight: "80%",
+                maxWidth: "80%",
+                minWidth: "20%",
+                minHeight: "20%"
+              }}
+            />
           </Grid>
           <Grid
             item
@@ -270,7 +274,7 @@ class SignUp extends Component {
               </Grid>
               <Grid item className={classes.fields}>
                 <Typography className={classes.signIn} variant="body1">
-                  Have an account?{" "}
+                  You have an account?
                   <Link
                     className={classes.signInUrl}
                     to="/sign-in"

@@ -148,7 +148,16 @@ class SignIn extends Component {
             <Typography variant="h2" className={classes.subtitle}>
               I'm glad to see you everyday
             </Typography>
-            <img alt="sign-in" src="/images/banners/login.png" />
+            <img
+              alt="sign-in"
+              src="/images/banners/login.png"
+              style={{
+                maxHeight: "80%",
+                maxWidth: "80%",
+                minWidth: "20%",
+                minHeight: "20%"
+              }}
+            />
           </Grid>
           <Grid
             item
@@ -232,10 +241,11 @@ class SignIn extends Component {
                   {messageError}
                 </Typography>
               )}
-              <Grid item className={classes.fields}>
-                {isLoading && !messageError ? (
-                  <CircularProgress className={classes.progress} />
-                ) : messageError ? (
+
+              {isLoading && !messageError ? (
+                <CircularProgress className={classes.progress} />
+              ) : messageError ? (
+                <Grid item className={classes.fields}>
                   <Button
                     className={classes.signInButton}
                     onClick={this.handleSingInFail}
@@ -244,23 +254,27 @@ class SignIn extends Component {
                   >
                     Try again
                   </Button>
-                ) : (
-                  <Button
-                    className={classes.signInButton}
-                    disabled={!isValid}
-                    onClick={this.handleSignIn}
-                    size="large"
-                    variant="contained"
-                  >
-                    Sign In
-                  </Button>
-                )}
-              </Grid>
-              <Grid item className={classes.forgotContainer}>
-                <Link className={classes.forgot} to="/">
-                  Forgot password?
-                </Link>
-              </Grid>
+                </Grid>
+              ) : (
+                <>
+                  <Grid item className={classes.fields}>
+                    <Button
+                      className={classes.signInButton}
+                      disabled={!isValid}
+                      onClick={this.handleSignIn}
+                      size="large"
+                      variant="contained"
+                    >
+                      Sign In
+                    </Button>
+                  </Grid>
+                  <Grid item className={classes.forgotContainer}>
+                    <Link className={classes.forgot} to="/">
+                      Forgot password?
+                    </Link>
+                  </Grid>
+                </>
+              )}
               <Grid item className={classes.fields}>
                 <Typography className={classes.signUp} variant="body1">
                   Don't have an account?{" "}

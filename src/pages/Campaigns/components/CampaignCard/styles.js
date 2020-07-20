@@ -16,7 +16,7 @@ export default theme => ({
     image: {
         maxWidth: "100%",
         maxHeight: "100%",
-        borderRadius: "10px"
+        borderRadius: "2%"
     },
     details: {},
     title: {
@@ -228,5 +228,13 @@ export default theme => ({
     },
     progress: {
         color: "#ffa4a8",
+    },
+    successContent: {
+        fontSize: 12,
+        color: "green",
+        marginLeft: theme.spacing(2)
+    },
+    iconSuccess: {
+        color: "green",
     },
 });

@@ -17,12 +17,8 @@ import { Dashboard as DashboardLayout } from "../../layouts";
 import {
   Budget,
   Users,
-  // Progress,
-  // Profit,
   CampaignChart,
   VouchersChart,
-  // DevicesChart,
-  // ProductList,
   OrdersTable,
   Campaign,
   Voucher
@@ -49,14 +45,14 @@ class Dashboard extends Component {
   state = {
     campaign_id: "",
     start_time: new Date(),
-    end_time: new Date(),
+    end_time: new Date()
   };
 
   dateToString = date => {
     return `${date.getFullYear()}-${
-        date.getMonth() + 1 < 10
-            ? "0" + (date.getMonth() + 1)
-            : date.getMonth() + 1
+      date.getMonth() + 1 < 10
+        ? "0" + (date.getMonth() + 1)
+        : date.getMonth() + 1
     }-${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}`;
   };
 
@@ -79,11 +75,15 @@ class Dashboard extends Component {
     return true;
   }
 
-  statistical = ()=>{
-    const {campaign_id, end_time, start_time}=this.state;
-    const token = cookie.load('token');
-    console.log("received", campaign_id, this.dateToString(start_time), this.dateToString(end_time), token);
-    this.props.doStatisticVoucher(campaign_id, this.dateToString(start_time), this.dateToString(end_time), token);
+  statistical = () => {
+    const { campaign_id, end_time, start_time } = this.state;
+    const token = cookie.load("token");
+    this.props.doStatisticVoucher(
+      campaign_id,
+      this.dateToString(start_time),
+      this.dateToString(end_time),
+      token
+    );
   };
   render() {
     const {
@@ -102,30 +102,38 @@ class Dashboard extends Component {
       return <Redirect to="/sign-in" />;
     }
 
-
     return (
       <DashboardLayout title="Dashboard">
         <Grid
           container
           direction="row"
-          justify="center"
+          justify="space-around"
           alignItems="center"
-          style={{ marginBottom: "10px", backgroundColor: "#2aa1fb" }}
+          style={{
+            backgroundColor: "#2aa1fb",
+            marginBottom: "1%",
+            maxHeight: 350,
+            height: "100%",
+          }}
         >
-          <Grid item lg={5} md={6} xl={5} xs={12}>
+          <Grid item>
             <Typography
+              variant="h2"
               style={{
                 fontFamily: "Pacifico",
-                fontSize: "30px",
                 color: "white"
               }}
             >
               What's news?
             </Typography>
           </Grid>
-          <Grid item lg={6} md={6} xl={6} xs={12}>
-            <Box display="flex" justifyContent="center" m={1} p={1}>
-              <img alt="Brainalytica logo" src="/images/banners/analys.png" />
+          <Grid item>
+            <Box display="flex" justifyContent="center">
+              <img
+                alt="Dashboard banner"
+                src="/images/banners/analys.png"
+                style={{ maxHeight: "80%", maxWidth: "80%", minHeight: "20%", minWidth: "20%"}}
+              />
             </Box>
           </Grid>
         </Grid>
@@ -155,9 +163,11 @@ class Dashboard extends Component {
                 campaign_id={this.state.campaign_id}
                 start_time={this.state.start_time}
                 end_time={this.state.end_time}
-                onChangeSelect={(e)=>this.setState({campaign_id: e.target.value})}
-                setStartTime={(date)=>this.setState({start_time: date._d})}
-                setEndTime={(date)=>this.setState({end_time: date._d})}
+                onChangeSelect={e =>
+                  this.setState({ campaign_id: e.target.value })
+                }
+                setStartTime={date => this.setState({ start_time: date._d })}
+                setEndTime={date => this.setState({ end_time: date._d })}
                 statisticClick={this.statistical}
                 isLoading={isLoadingStatisticVoucher}
                 error={messageError}

@@ -111,9 +111,7 @@ const BootstrapInput = withStyles(theme => ({
     padding: "10px 12px",
     transition: theme.transitions.create(["border-color", "box-shadow"]),
     // Use the system font instead of the default Roboto font.
-    fontFamily: [
-      "Roboto",
-    ].join(","),
+    fontFamily: ["Roboto"].join(","),
     "&:focus": {
       boxShadow: `${fade("#9bc3f2", 0.25)} 0 0 0 0.2rem`,
       borderColor: theme.palette.primary.main
@@ -224,7 +222,6 @@ class EmployeeList extends Component {
     const token = cookie.load("token");
     const { values } = this.state;
 
-    console.log("createEmployee", values);
     this.props.doCreateEmployee(
       values.username,
       values.password,
@@ -272,7 +269,7 @@ class EmployeeList extends Component {
     if (isLoading) {
       return (
         <div className={classes.progressWrapper}>
-          <CircularProgress className={classes.progress}/>
+          <CircularProgress className={classes.progress} />
         </div>
       );
     }
@@ -289,7 +286,7 @@ class EmployeeList extends Component {
       );
     }
 
-    return <EmployeesTable onSelect={this.handleSelect} users={myEmployees}/>;
+    return <EmployeesTable onSelect={this.handleSelect} users={myEmployees} />;
   }
 
   render() {
@@ -316,7 +313,6 @@ class EmployeeList extends Component {
 
     const token = cookie.load("token");
 
-    console.log("selectedUsers", selectedUsers);
 
     if (!token) {
       return <Redirect to="/sign-in" />;
@@ -327,24 +323,33 @@ class EmployeeList extends Component {
         <Grid
           container
           direction="row"
-          justify="center"
+          justify="space-around"
           alignItems="center"
-          style={{ backgroundColor: "#9bc3f2" }}
+          style={{
+            backgroundColor: "#9bc3f2",
+            marginBottom: "1%",
+            maxHeight: 350,
+            height: "100%"
+          }}
         >
-          <Grid item lg={4} md={6} xl={4} xs={12}>
+          <Grid item>
             <Typography
-              style={{
+                variant="h2"
+                style={{
                 fontFamily: "Pacifico",
-                fontSize: "30px",
                 color: "white"
               }}
             >
-              Employees
+              Together we can change the world
             </Typography>
           </Grid>
-          <Grid item lg={6} md={6} xl={6} xs={12}>
-            <Box display="flex" justifyContent="center" m={1} p={1}>
-              <img alt="Brainalytica logo" src="/images/banners/employee.png" />
+          <Grid item>
+            <Box display="flex" justifyContent="center">
+              <img
+                alt="Employees banner"
+                src="/images/banners/employee.png"
+                style={{ maxHeight: "80%", maxWidth: "80%" , minWidth: "20%", minHeight:"20%"}}
+              />
             </Box>
           </Grid>
         </Grid>
@@ -355,7 +360,7 @@ class EmployeeList extends Component {
             onNewEmployee={this.handleOpenCreate}
             handleDeleteUsers={this.deleteEmployee}
           />
-          <div className={classes.content} >{this.renderUsers()}</div>
+          <div className={classes.content}>{this.renderUsers()}</div>
         </div>
 
         <Dialog
@@ -508,7 +513,7 @@ class EmployeeList extends Component {
                   </Grid>
                   {isCreating && !messageError && (
                     <div className={classes.progressWrapper}>
-                      <CircularProgress className={classes.progress}/>
+                      <CircularProgress className={classes.progress} />
                     </div>
                   )}
                 </Grid>

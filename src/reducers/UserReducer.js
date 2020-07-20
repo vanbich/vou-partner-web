@@ -27,8 +27,6 @@ const User = (state = initState, action) => {
       state.display_name = data.display_name;
       state.isGetInfo = false;
 
-      console.log("state", state);
-
       return { ...state };
     }
     case userConstants.GET_INFO_FAILURE: {

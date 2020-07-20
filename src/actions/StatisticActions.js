@@ -48,7 +48,6 @@ export const statisticVouchersRequest = (
       }
     });
 
-    // console.log("mmmmmmmm", received.data, used.data);
     dispatch(statisticVouchersActionSuccess(received.data, used.data));
   } catch (e) {
     dispatch(statisticVouchersActionFailure(e));

@@ -25,7 +25,7 @@ import {
   DashboardOutlined as DashboardIcon,
   AccountBoxOutlined as AccountBoxIcon,
 } from "@material-ui/icons";
-// import SportsEsportsIcon from "@material-ui/icons/SportsEsports";
+import SportsEsportsIcon from "@material-ui/icons/SportsEsports";
 import ConfirmationNumberIcon from "@material-ui/icons/ConfirmationNumber";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 
@@ -64,7 +64,7 @@ class Sidebar extends Component {
           >
             <Link className={classes.logoLink} to="/">
               <img
-                alt="Brainalytica logo"
+                alt="Vou logo"
                 className={classes.logoImage}
                 src="/images/logos/vou-50px.png"
               />
@@ -72,7 +72,7 @@ class Sidebar extends Component {
             <Typography
               variant="h1"
               style={{
-                marginTop: "10px",
+                marginTop: "0.5%",
                 fontFamily: "Francisco",
                 textAlign: "center",
                 color: "#ffa8a4"
@@ -86,7 +86,7 @@ class Sidebar extends Component {
         <div className={classes.profile}>
           <Link to="/account">
             <Avatar
-              alt="Roman Kutepov"
+              alt="User avatar"
               className={classes.avatar}
               src={avatar ? avatar : "/images/avatars/avatar_1.png"}
             />
@@ -139,6 +139,21 @@ class Sidebar extends Component {
             <ListItemText
                 classes={{ primary: classes.listItemText }}
                 primary="Employees"
+            />
+          </ListItem>
+
+          <ListItem
+              activeClassName={classes.activeListItem}
+              className={classes.listItem}
+              component={NavLink}
+              to="/games"
+          >
+            <ListItemIcon className={classes.listItemIcon}>
+              <SportsEsportsIcon />
+            </ListItemIcon>
+            <ListItemText
+                classes={{ primary: classes.listItemText }}
+                primary="Games"
             />
           </ListItem>
 

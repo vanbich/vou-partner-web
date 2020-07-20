@@ -32,8 +32,6 @@ export const getInfoRequest = token => async dispatch => {
       }
     });
 
-
-    console.log("getInfo", res);
     dispatch(getInfoActionSuccess(res));
   } catch (err) {
     dispatch(getInfoActionFailure(err));
@@ -105,7 +103,6 @@ export const updateInfoRequest = (
       token
     ).then(res => {
       if (res.data) {
-        console.log("doUpdateInfo", res);
         dispatch(updateInfoActionSuccess(res));
       } else {
         dispatch(updateInfoActionFailure(res));

@@ -13,110 +13,19 @@ export default theme => ({
   grid: {
     height: "100%"
   },
-  quoteWrapper: {
-    [theme.breakpoints.down("md")]: {
-      display: "none"
-    }
-  },
-  quote: {
-    backgroundColor: theme.palette.common.neutral,
-    height: "100%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundImage: "url(/images/banners/login.png)",
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center"
-  },
-  quoteInner: {
-    textAlign: "center",
-    flexBasis: "600px"
-  },
-  quoteText: {
-    color: theme.palette.common.white,
-    fontWeight: 300
-  },
-  name: {
-    marginTop: theme.spacing(3),
-    color: theme.palette.common.white
-  },
-  bio: {
-    color: theme.palette.common.white
-  },
-  contentWrapper: {},
-  content: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column"
-  },
-  contentHeader: {
-    display: "flex",
-    alignItems: "center",
-    paddingTop: theme.spacing(5),
-    paddingBototm: theme.spacing(2),
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2)
-  },
-  backButton: {},
-  logoImage: {
-    marginLeft: theme.spacing(4)
-  },
-  contentBody: {
-    flexGrow: 1,
-    display: "flex",
-    alignItems: "center",
-    [theme.breakpoints.down("md")]: {
-      justifyContent: "center"
-    }
-  },
-  form: {
-    paddingLeft: "100px",
-    paddingRight: "100px",
-    paddingBottom: "125px",
-    flexBasis: "700px",
-    [theme.breakpoints.down("sm")]: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2)
-    }
-  },
   title: {
-    marginBottom: theme.spacing(5),
+    marginBottom: theme.spacing(5)
   },
   subtitle: {
     color: "#ffffff",
     marginTop: theme.spacing(0.5),
     fontFamily: "Pacifico"
   },
-  sugestion: {
-    color: theme.palette.text.secondary,
-    marginTop: theme.spacing(2),
-    textAlign: "center"
-  },
   fields: {
     marginTop: theme.spacing(1)
   },
   textField: {
-    width: "35ch",
-
-  },
-  policy: {
-    display: "flex",
-    alignItems: "center"
-  },
-  policyCheckbox: {
-    marginLeft: "-14px"
-  },
-  policyText: {
-    display: "inline",
-    color: theme.palette.text.secondary
-  },
-  policyUrl: {
-    color: theme.palette.text.primary,
-    "&:hover": {
-      cursor: "pointer",
-      color: theme.palette.primary.main
-    }
+    width: "35ch"
   },
   progress: {
     display: "block",
@@ -131,9 +40,9 @@ export default theme => ({
     color: "#ffffff",
     width: "30ch",
     borderRadius: 50,
-    '&:hover': {
+    "&:hover": {
       backgroundColor: "#ffa8a4",
-      color: "#ffffff",
+      color: "#ffffff"
     }
   },
   signUp: {
@@ -148,21 +57,21 @@ export default theme => ({
     }
   },
   fieldError: {
-    color: theme.palette.danger.main,
+    color: theme.palette.danger.main
   },
   submitError: {
     color: theme.palette.danger.main,
     alignText: "center",
     marginBottom: theme.spacing(1),
     marginTop: theme.spacing(2),
-    textAlign: 'center',
-    fontWeight: 'bold'
+    textAlign: "center",
+    fontWeight: "bold"
   },
   forgotContainer: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(4)
   },
   forgot: {
     color: "#299ebf",
-    fontSize: 13,
+    fontSize: 13
   }
 });

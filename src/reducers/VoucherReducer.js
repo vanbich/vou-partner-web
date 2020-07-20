@@ -33,7 +33,6 @@ const getData = array => {
       }
     }
   }
-  console.log("data", data);
   return data;
 };
 
@@ -56,7 +55,6 @@ const Vouchers = (state = initState, action) => {
         ]
       };
       if (action.payload.res.data) {
-        console.log("action.payload.res.data", action.payload.res.data);
         state.numbers = action.payload.res.data.length;
         state.myVouchers = [...getData(action.payload.res.data)];
         state.myVouchers.map(voucher => {
@@ -65,7 +63,6 @@ const Vouchers = (state = initState, action) => {
           state.statisticVoucher.datasets[1].data.push(voucher.used);
           return state.statisticVoucher;
         });
-        console.log("vouchers", state.myVouchers);
         return { ...state };
       } else {
         state.myVouchers = [];

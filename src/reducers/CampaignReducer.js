@@ -3,7 +3,7 @@ import userConstants from "../constants";
 const initState = {
   myCampaigns: [],
   number: 0,
-  isSuccessful: false,
+  isSuccessful: true,
   messageError: "",
   isLoading: false,
   isCreating: false,
@@ -65,7 +65,6 @@ const Campaigns = (state = initState, action) => {
       state.isLoading = false;
       state.isSuccessful = false;
       state.isDeleted = false;
-      console.log("aaaaaa", action.payload.res.data.length);
 
       return JSON.parse(JSON.stringify(state));
     }
@@ -154,6 +153,7 @@ const Campaigns = (state = initState, action) => {
       state.isSuccessful = false;
       state.messageError = null;
       state.isDeleted = false;
+      state.isUpdating= false;
       return { ...state };
     }
     default:

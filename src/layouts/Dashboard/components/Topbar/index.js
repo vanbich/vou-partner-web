@@ -10,27 +10,14 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core";
 
 // Material components
-import {
-  Badge,
-  IconButton,
-  Popover,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
+import { IconButton, Toolbar, Typography, Grid } from "@material-ui/core";
 
 // Material icons
 import {
   Menu as MenuIcon,
   Close as CloseIcon,
-  NotificationsOutlined as NotificationsIcon,
-  Input as InputIcon,
+  Input as InputIcon
 } from "@material-ui/icons";
-
-// Shared services
-import { getNotifications } from "../../../../services/notification";
-
-// Custom components
-import { NotificationList } from "./components";
 
 // Component styles
 import styles from "./styles";
@@ -38,64 +25,11 @@ import { connect } from "react-redux";
 import { logOut } from "../../../../actions/AthenticationActions";
 
 class Topbar extends Component {
-  constructor(props) {
-    super(props);
-    this.wrapper = React.createRef();
-  }
-  signal = true;
-
-  state = {
-    notifications: [],
-    notificationsLimit: 4,
-    notificationsCount: 0,
-    notificationsEl: null,
-  };
-
-  async getNotifications() {
-    try {
-      const { notificationsLimit } = this.state;
-
-      const { notifications, notificationsCount } = await getNotifications(
-        notificationsLimit
-      );
-
-      if (this.signal) {
-        this.setState({
-          notifications,
-          notificationsCount,
-        });
-      }
-    } catch (error) {
-      return;
-    }
-  }
-
-  componentDidMount() {
-    this.signal = true;
-    this.getNotifications();
-  }
-
-  componentWillUnmount() {
-    this.signal = false;
-  }
-
   handleSignOut = () => {
     const { history } = this.props;
 
     this.props.doLogout();
     history.push("/sign-in");
-  };
-
-  handleShowNotifications = (event) => {
-    this.setState({
-      notificationsEl: event.currentTarget,
-    });
-  };
-
-  handleCloseNotifications = () => {
-    this.setState({
-      notificationsEl: null,
-    });
   };
 
   render() {
@@ -104,66 +38,51 @@ class Topbar extends Component {
       className,
       title,
       isSidebarOpen,
-      onToggleSidebar,
+      onToggleSidebar
     } = this.props;
-    const { notifications, notificationsCount, notificationsEl } = this.state;
 
     const rootClassName = classNames(classes.root, className);
-    const showNotifications = Boolean(notificationsEl);
 
     return (
       <Fragment>
         <div className={rootClassName}>
           <Toolbar className={classes.toolbar}>
-            <IconButton
-              className={classes.menuButton}
-              onClick={onToggleSidebar}
-              variant="text"
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="center"
             >
-              {isSidebarOpen ? <CloseIcon /> : <MenuIcon />}
-            </IconButton>
-            <Typography className={classes.title} variant="h4">
-              {title}
-            </Typography>
-            <IconButton
-              className={classes.notificationsButton}
-              onClick={this.handleShowNotifications}
-            >
-              <Badge
-                badgeContent={notificationsCount}
-                color="primary"
-                variant="dot"
-              >
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              className={classes.signOutButton}
-              onClick={this.handleSignOut}
-            >
-              <InputIcon />
-            </IconButton>
+              <Grid item>
+                <Grid
+                  container
+                  direction="row"
+                  justify="center"
+                  alignItems="center"
+                >
+                  <IconButton
+                    className={classes.menuButton}
+                    onClick={onToggleSidebar}
+                    variant="text"
+                  >
+                    {isSidebarOpen ? <CloseIcon /> : <MenuIcon />}
+                  </IconButton>
+                  <Typography className={classes.title} variant="h5">
+                    {title}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid item>
+                <IconButton
+                  className={classes.signOutButton}
+                  onClick={this.handleSignOut}
+                >
+                  <InputIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
           </Toolbar>
         </div>
-        <Popover
-          ref={this.wrapper}
-          anchorEl={notificationsEl}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          onClose={this.handleCloseNotifications}
-          open={showNotifications}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "center",
-          }}
-        >
-          <NotificationList
-            notifications={notifications}
-            onSelect={this.handleCloseNotifications}
-          />
-        </Popover>
       </Fragment>
     );
   }
@@ -175,25 +94,30 @@ Topbar.propTypes = {
   history: PropTypes.object.isRequired,
   isSidebarOpen: PropTypes.bool,
   onToggleSidebar: PropTypes.func,
-  title: PropTypes.string,
+  title: PropTypes.string
 };
 
 Topbar.defaultProps = {
-  onToggleSidebar: () => {},
+  onToggleSidebar: () => {}
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {};
 };
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     doLogout: () => {
       dispatch(logOut());
-    },
+    }
   };
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(compose(withRouter, withStyles(styles))(Topbar));
+)(
+  compose(
+    withRouter,
+    withStyles(styles)
+  )(Topbar)
+);

@@ -26,7 +26,6 @@ export const getMyVouchersAction = res => {
 export const getMyVouchersRequest = (token,id) => {
   return dispatch => {
     return doGetMyVouchers(token,id).then(res => {
-      console.log("getMyVouchersAction", res);
       dispatch(getMyVouchersAction(res));
     });
   };

@@ -59,7 +59,7 @@ const styles = theme => ({
     marginTop: theme.spacing(2),
     marginLeft: "auto",
     marginRight: "auto",
-    color: "#ffa8a4",
+    color: "#ffa8a4"
   },
   submitError: {
     color: theme.palette.danger.main,
@@ -129,6 +129,9 @@ class Account extends Component {
       avatarPreview: avatar
     });
   }
+  shouldComponentUpdate(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean {
+    return true;
+  }
 
   handleFieldChange = (field, value) => {
     const newState = { ...this.state };
@@ -153,19 +156,15 @@ class Account extends Component {
     const { id } = this.props;
     const token = cookie.load("token");
 
-    console.log("update info", values, avatar);
-
     const uploadTask = storage.ref(`${id}/avatars/${avatar.name}`).put(avatar);
 
     uploadTask.on(
       "state_changed",
       snapShot => {
         //takes a snap shot of the process as it is happening
-        console.log(snapShot);
       },
       err => {
         //catches the errors
-        console.log("abcnd");
 
         this.setState({
           isUploadImg: err
@@ -177,8 +176,6 @@ class Account extends Component {
           .child(avatar.name)
           .getDownloadURL()
           .then(fireBaseUrl => {
-            console.log("url", fireBaseUrl, values, token);
-
             this.props.doUpdateInfo(
               values.display_name,
               values.phone,
@@ -230,8 +227,6 @@ class Account extends Component {
     const showAddressError = touched.address && errors.address;
     const showPhoneError = touched.phone && errors.phone;
 
-    console.log("message", messageError);
-
     const token = cookie.load("token");
 
     if (!token) {
@@ -243,36 +238,47 @@ class Account extends Component {
         <Grid
           container
           direction="row"
-          justify="center"
+          justify="space-around"
           alignItems="center"
-          style={{ marginBottom: "20px", backgroundColor: "#ffc5bd" }}
+          style={{
+            backgroundColor: "#ffc5bd",
+            marginBottom: "1%",
+            maxHeight: 350,
+            height: "100%"
+          }}
         >
-          <Grid item lg={4} md={6} xl={4} xs={12}>
+          <Grid item>
             <Typography
+              variant="h2"
               style={{
                 fontFamily: "Pacifico",
-                fontSize: "30px",
                 color: "white"
               }}
             >
               Hi, {display_name}
             </Typography>
             <Typography
+              variant="h4"
               style={{
                 fontFamily: "Pacifico",
-                fontSize: "18px",
-                marginTop: "15px",
+                marginTop: "1%",
                 color: "white"
               }}
             >
               You can change anything about you in here
             </Typography>
           </Grid>
-          <Grid item lg={6} md={6} xl={6} xs={12}>
-            <Box display="flex" justifyContent="center" m={1} p={1}>
+          <Grid item>
+            <Box display="flex" justifyContent="center">
               <img
-                alt="Brainalytica logo"
+                alt="Account banner"
                 src="/images/banners/account-settings.png"
+                style={{
+                  maxHeight: "80%",
+                  maxWidth: "80%",
+                  minWidth: "20%",
+                  minHeight: "20%"
+                }}
               />
             </Box>
           </Grid>
