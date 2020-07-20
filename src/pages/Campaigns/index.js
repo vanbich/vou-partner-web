@@ -356,12 +356,12 @@ class Campaign extends Component {
       imageCampaign,
       start_time,
       end_time,
-      gamesChoose
+      // gamesChoose
     } = this.state;
     const { id } = this.props;
     const token = cookie.load("token");
 
-    const campaignGames = gamesChoose.filter(game => game.isCheck === true);
+    // const campaignGames = gamesChoose.filter(game => game.isCheck === true);
 
     const uploadTask = storage
       .ref(`${id}/campaigns/${imageCampaign.name}`)

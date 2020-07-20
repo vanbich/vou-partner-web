@@ -1,7 +1,6 @@
 import axios from "axios";
 import userConstants from "../constants";
 
-
 const getInfoActionSuccess = res => {
   return {
     type: userConstants.GET_INFO_SUCCESS,
@@ -20,8 +19,6 @@ const getInfoActionFailure = err => {
   };
 };
 
-
-
 export const getInfoRequest = token => async dispatch => {
   try {
     const res = await axios({
@@ -38,7 +35,15 @@ export const getInfoRequest = token => async dispatch => {
   }
 };
 
-const doUpdateInfo = (display_name, phone, email, address, avatar,location, token) => {
+const doUpdateInfo = (
+  display_name,
+  phone,
+  email,
+  address,
+  avatar,
+  location,
+  token
+) => {
   return axios({
     method: "PATCH",
     url: "https://vouapp-api.herokuapp.com/user/me",
@@ -89,6 +94,7 @@ export const updateInfoRequest = (
   email,
   address,
   avatar,
+  location,
   token
 ) => {
   return dispatch => {
@@ -99,7 +105,8 @@ export const updateInfoRequest = (
       email,
       address,
       avatar,
-      JSON.stringify({latitude: 10.771139, longtitude: 106.681136}),
+      // JSON.stringify({latitude: 10.771139, longitude: 106.681136}),
+      location,
       token
     ).then(res => {
       if (res.data) {

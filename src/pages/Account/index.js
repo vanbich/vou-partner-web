@@ -90,6 +90,7 @@ class Account extends Component {
     avatarPreview:
       "https://www.google.com/search?q=tocotoco+logo&tbm=isch&ved=2ahUKEwi1treRl8fpAhWTIqYKHUMUDk0Q2-cCegQIABAA&oq=tocotoco+logo&gs_lcp=CgNpbWcQAzICCAAyBAgAEB4yBggAEAgQHjIGCAAQCBAeOgYIABAFEB46BAgAEBhQ5RVYnR5gzCJoAHAAeACAAVqIAZ8DkgEBNZgBAKABAaoBC2d3cy13aXotaW1n&sclient=img&ei=fp7HXrX_HpPFmAXDqLjoBA&bih=664&biw=1366&client=firefox-b-d#imgrc=ae-im1TyccvvTM",
     avatar: "",
+    location: { latitude: 0, longitude: 0 },
     touched: {
       email: false,
       address: false,
@@ -118,7 +119,7 @@ class Account extends Component {
   }, 300);
 
   componentDidMount() {
-    const { display_name, email, address, phone, avatar } = this.props;
+    const { display_name, email, address, phone, location, avatar } = this.props;
     this.setState({
       values: {
         display_name: display_name,
@@ -126,13 +127,25 @@ class Account extends Component {
         email: email,
         phone: phone
       },
+      location: {...location},
       avatarPreview: avatar
     });
   }
-  shouldComponentUpdate(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean {
-    return true;
-  }
 
+  handleChangeLatitude = e => {
+    const state = this.state.location;
+    state.latitude = parseFloat(e.target.value);
+    this.setState({
+      location: { ...state }
+    });
+  };
+  handleChangeLongitude = e => {
+    const state = this.state.location;
+    state.longitude = parseFloat(e.target.value);
+    this.setState({
+      location: { ...state }
+    });
+  };
   handleFieldChange = (field, value) => {
     const newState = { ...this.state };
 
@@ -152,10 +165,18 @@ class Account extends Component {
   };
 
   handleUpdateInfo = () => {
-    const { values, avatar } = this.state;
+    const { values, avatar, location } = this.state;
     const { id } = this.props;
     const token = cookie.load("token");
 
+    console.log(
+      " values, avatar, location,id,token",
+      values,
+      avatar,
+      location,
+      id,
+      token
+    );
     const uploadTask = storage.ref(`${id}/avatars/${avatar.name}`).put(avatar);
 
     uploadTask.on(
@@ -165,7 +186,6 @@ class Account extends Component {
       },
       err => {
         //catches the errors
-
         this.setState({
           isUploadImg: err
         });
@@ -182,6 +202,7 @@ class Account extends Component {
               values.email,
               values.address,
               fireBaseUrl,
+              JSON.stringify(location),
               token
             );
           });
@@ -220,7 +241,14 @@ class Account extends Component {
       isLoading
     } = this.props;
 
-    const { touched, errors, isValid, avatarPreview, values } = this.state;
+    const {
+      touched,
+      errors,
+      isValid,
+      avatarPreview,
+      values,
+      location
+    } = this.state;
 
     const showDisplayError = touched.display_name && errors.display_name;
     const showEmailError = touched.email && errors.email;
@@ -292,6 +320,8 @@ class Account extends Component {
                   email={values.email}
                   address={values.address}
                   phone={values.phone}
+                  latitude={location.latitude}
+                  longitude={location.longitude}
                   showDisplayErr={showDisplayError}
                   showEmailError={showEmailError}
                   showAddressError={showAddressError}
@@ -309,6 +339,8 @@ class Account extends Component {
                   phoneChange={event =>
                     this.handleFieldChange("phone", event.target.value)
                   }
+                  latitudeChange={this.handleChangeLatitude}
+                  longitudeChange={this.handleChangeLongitude}
                 />
               </Grid>
               <Grid item lg={4} md={6} xl={4} xs={12}>
@@ -387,6 +419,7 @@ const mapStateToProps = state => {
     address: state.User.address,
     phone: state.User.phone,
     avatar: state.User.avatar,
+    location: state.User.location,
     messageError: state.User.messageError,
     isSuccess: state.User.isSuccess,
     isLoading: state.User.isLoading
@@ -395,9 +428,25 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    doUpdateInfo: (display_name, phone, email, address, avatar, token) => {
+    doUpdateInfo: (
+      display_name,
+      phone,
+      email,
+      address,
+      avatar,
+      location,
+      token
+    ) => {
       dispatch(
-        updateInfoRequest(display_name, phone, email, address, avatar, token)
+        updateInfoRequest(
+          display_name,
+          phone,
+          email,
+          address,
+          avatar,
+          location,
+          token
+        )
       );
     },
     doGetInfo: token => {

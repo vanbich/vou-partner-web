@@ -11,7 +11,6 @@ import { withStyles } from "@material-ui/core";
 import { Typography } from "@material-ui/core";
 
 // Material icons
-import { ArrowDownward as ArrowDownwardIcon } from "@material-ui/icons";
 import ReceiptIcon from "@material-ui/icons/Receipt";
 
 // Shared components

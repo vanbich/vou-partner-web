@@ -11,7 +11,8 @@ const initState = {
   messageError: null,
   isGetInfo: false,
   isSuccess: false,
-  isLoading: false
+  isLoading: false,
+  location: {latitude: 0, longitude: 0},
 };
 
 const User = (state = initState, action) => {
@@ -25,6 +26,7 @@ const User = (state = initState, action) => {
       state.address = data.address;
       state.avatar = data.avatar;
       state.display_name = data.display_name;
+      state.location = JSON.parse(data.location);
       state.isGetInfo = false;
 
       return { ...state };

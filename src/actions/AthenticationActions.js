@@ -8,6 +8,7 @@ function doRegister(username, password) {
     data: {
       username,
       password,
+      role: "partner",
       is_partner: true
     }
   });

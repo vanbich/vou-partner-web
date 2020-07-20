@@ -82,6 +82,10 @@ function Account(props) {
     errors,
     showAddressError,
     showPhoneError,
+      latitude,
+      latitudeChange,
+      longitude,
+      longitudeChange,
     ...rest
   } = props;
 
@@ -233,6 +237,64 @@ function Account(props) {
                     {errors.phone[0]}
                   </Typography>
                 )}
+              </Grid>
+            </Grid>
+          </div>
+          <div className={classes.field}>
+            <Grid
+                container
+                direction="row"
+                justify="space-around"
+                alignItems="center"
+            >
+              <Grid item xs={4}>
+                <Grid
+                    container
+                    direction="column"
+                    alignItems="flex-start"
+                >
+                  <Grid item>
+                    <InputLabel
+                        shrink
+                        htmlFor="bootstrap-input"
+                        className={classes.typo}
+                    >
+                      LATITUDE
+                    </InputLabel>
+                  </Grid>
+                  <Grid item>
+                    <BootstrapInput
+                        id="bootstrap-input"
+                        onChange={event => latitudeChange(event)}
+                        value={latitude}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+
+              <Grid item xs={4}>
+                <Grid
+                    container
+                    direction="column"
+                    alignItems="flex-start"
+                >
+                  <Grid item>
+                    <InputLabel
+                        shrink
+                        htmlFor="bootstrap-input"
+                        className={classes.typo}
+                    >
+                      LONGITUDE
+                    </InputLabel>
+                  </Grid>
+                  <Grid item>
+                    <BootstrapInput
+                        id="bootstrap-input"
+                        onChange={event => longitudeChange(event)}
+                        value={longitude}
+                    />
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </div>

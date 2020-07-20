@@ -19,12 +19,14 @@ import {
   Users,
   CampaignChart,
   VouchersChart,
-  OrdersTable,
+  // OrdersTable,
   Campaign,
   Voucher
 } from "./components";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
+
+//Service method
 import { connect } from "react-redux";
 import { getAllCampaignsRequest } from "../../actions/CampaignActions";
 import { getInfoRequest } from "../../actions/UserActions";
@@ -173,9 +175,9 @@ class Dashboard extends Component {
                 error={messageError}
               />
             </Grid>
-            <Grid item xs={12}>
-              <OrdersTable className={classes.item} />
-            </Grid>
+            {/*<Grid item xs={12}>*/}
+            {/*  <OrdersTable className={classes.item} />*/}
+            {/*</Grid>*/}
           </Grid>
         </div>
       </DashboardLayout>

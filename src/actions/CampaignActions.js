@@ -225,7 +225,7 @@ export const updateCampaignRequest = (
 ) => async dispatch => {
   dispatch(updateCampaignActionRequest());
   try {
-    const res = await axios({
+     await axios({
       method: "PATCH",
       url: `https://vouapp-api.herokuapp.com/campaign/${id}`,
       headers: {
