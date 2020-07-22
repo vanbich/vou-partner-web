@@ -201,7 +201,7 @@ class VouchersChart extends Component {
                     alignSelf: "center"
                   }}
                 >
-                  Please choose campaign for statistical vouchers
+                  No results for statistic
                 </Typography>
               </div>
             ) : (

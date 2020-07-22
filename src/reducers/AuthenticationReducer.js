@@ -77,8 +77,11 @@ const Authentication = (state = initState, action) => {
 
       if (action.payload.err.message === "Network Error") {
         state.messageError = "Check your connection, please!";
-      } else {
-        state.messageError = "Email is existed";
+      }
+      if (action.payload.err.message === "Request failed with status code 409") {
+        state.messageError = "Username is existed";
+      }else {
+        state.messageError = action.payload.err.message;
       }
 
       state.isLogin = false;
