@@ -15,8 +15,8 @@ import { Dashboard as DashboardLayout } from "../../layouts";
 
 // Custom components
 import {
-  Budget,
-  Users,
+  // Budget,
+  // Users,
   CampaignChart,
   VouchersChart,
   // OrdersTable,
@@ -47,7 +47,7 @@ class Dashboard extends Component {
   state = {
     campaign_id: "",
     start_time: new Date(),
-    end_time: new Date()
+    end_time: new Date(),
   };
 
   dateToString = date => {
@@ -141,17 +141,21 @@ class Dashboard extends Component {
         </Grid>
         <div className={classes.root}>
           <Grid container spacing={4}>
-            <Grid item lg={3} sm={6} xl={3} xs={12}>
-              <Budget className={classes.item} />
-            </Grid>
-            <Grid item lg={3} sm={6} xl={3} xs={12}>
-              <Users className={classes.item} />
-            </Grid>
-            <Grid item lg={3} sm={6} xl={3} xs={12}>
-              <Campaign className={classes.item} numbers={myCampaigns.length} />
-            </Grid>
-            <Grid item lg={3} sm={6} xl={3} xs={12}>
-              <Voucher className={classes.item} numbers={numbers} />
+            {/*<Grid item lg={3} sm={6} xl={3} xs={12}>*/}
+            {/*  <Budget className={classes.item} />*/}
+            {/*</Grid>*/}
+            {/*<Grid item lg={3} sm={6} xl={3} xs={12}>*/}
+            {/*  <Users className={classes.item} />*/}
+            {/*</Grid>*/}
+            <Grid item xs={12}>
+              <Grid container direction="row" alignItems="center" justify="center" spacing={4}>
+                <Grid item lg={4} sm={6} xl={3} xs={12}>
+                  <Campaign className={classes.item} numbers={myCampaigns.length}/>
+                </Grid>
+                <Grid item lg={4} sm={6} xl={3} xs={12}>
+                <Voucher className={classes.item} numbers={numbers} />
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item xs={12}>
               <CampaignChart className={classes.item} data={statisticData} />

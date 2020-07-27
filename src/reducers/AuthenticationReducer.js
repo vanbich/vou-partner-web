@@ -73,14 +73,13 @@ const Authentication = (state = initState, action) => {
       ) {
         state.messageError =
           "Please make sure your password is between 6 and 16 characters";
-      }
-
-      if (action.payload.err.message === "Network Error") {
+      } else if (action.payload.err.message === "Network Error") {
         state.messageError = "Check your connection, please!";
-      }
-      if (action.payload.err.message === "Request failed with status code 409") {
+      } else if (
+        action.payload.err.message === "Request failed with status code 409"
+      ) {
         state.messageError = "Username is existed";
-      }else {
+      } else {
         state.messageError = action.payload.err.message;
       }
 

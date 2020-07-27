@@ -54,6 +54,15 @@ const Campaigns = (state = initState, action) => {
             logo: "/images/products/product_2.png",
             description:
               "Tìm những cặp ảnh giống nhau với số lượt mở ảnh cho trước nếu hết lượt mở ảnh mà chưa mở hết thì thua"
+          },
+          {
+            id: 3,
+            name: "Tìm mảnh ghép",
+            accept_point: 3,
+            point: 5,
+            logo: "/images/products/product_3.png",
+            description:
+              "Tìm ảnh cho trước có trong bức tranh được hiển thị trên màn hình trong khoảng thời gian cho trước, hết thời gian thì kết thúc màn chơi"
           }
         ];
         state.statisticData.labels.push(state.myCampaigns[i].name);
@@ -129,23 +138,23 @@ const Campaigns = (state = initState, action) => {
       return { ...state };
     }
 
-    case userConstants.UPDATE_CAMPAIGN_REQUEST:{
-      state.isUpdating =  true;
+    case userConstants.UPDATE_CAMPAIGN_REQUEST: {
+      state.isUpdating = true;
       state.isSuccessful = false;
       state.messageError = null;
-      return {...state}
+      return { ...state };
     }
-    case userConstants.UPDATE_CAMPAIGN_SUCCESS:{
-      state.isUpdating =  false;
+    case userConstants.UPDATE_CAMPAIGN_SUCCESS: {
+      state.isUpdating = false;
       state.isSuccessful = true;
       state.messageError = null;
-      return {...state}
+      return { ...state };
     }
-    case userConstants.UPDATE_CAMPAIGN_FAILURE:{
-      state.isUpdating =  false;
+    case userConstants.UPDATE_CAMPAIGN_FAILURE: {
+      state.isUpdating = false;
       state.isSuccessful = true;
       state.messageError = action.payload.err;
-      return {...state}
+      return { ...state };
     }
 
     case userConstants.REFRESH_STATE_CAMPAIGN: {
@@ -153,7 +162,7 @@ const Campaigns = (state = initState, action) => {
       state.isSuccessful = false;
       state.messageError = null;
       state.isDeleted = false;
-      state.isUpdating= false;
+      state.isUpdating = false;
       return { ...state };
     }
     default:
